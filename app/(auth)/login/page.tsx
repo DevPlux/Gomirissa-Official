@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { auth, googleProvider, db } from "../../../firebase/config";
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
@@ -9,8 +10,8 @@ import Link from "next/link";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleRedirect = async (uid: string) => {
     const docSnap = await getDoc(doc(db, "users", uid));
@@ -41,32 +42,82 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+    <div 
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6"
+      style={{ backgroundImage: "url('/images/sea bg2.jpg')" }}
+    >
+      {/* Liquid Dark Overlay */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
 
-        <form onSubmit={handleEmailLogin} className="space-y-4">
-          <input type="email" placeholder="Email" className="w-full p-2 border rounded" 
-             onChange={(e) => setEmail(e.target.value)} required />
-          <input type="password" placeholder="Password" className="w-full p-2 border rounded" 
-             onChange={(e) => setPassword(e.target.value)} required />
-          <div className="text-right">
-             <Link href="/forgot-password" className="text-sm text-blue-500 hover:underline">Forgot Password?</Link>
+      {/* Compact Glass Card */}
+      <div className="relative w-full max-w-[380px] animate-in fade-in zoom-in duration-500">
+        <div className="bg-white/10 backdrop-blur-2xl border border-white/20 p-6 sm:p-8 rounded-[2rem] shadow-2xl overflow-y-auto max-h-[95vh]">
+          
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-extrabold text-white tracking-tight">Welcome Back</h2>
+            <p className="text-white/50 text-xs mt-1">Sign in to Mirissa Adventures</p>
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Login</button>
-        </form>
 
-        <div className="my-4 text-center text-gray-500">OR</div>
+          {error && (
+            <div className="mb-4 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-100 text-[10px] text-center">
+              {error}
+            </div>
+          )}
 
-        <button onClick={handleGoogleLogin} className="w-full border p-2 rounded flex justify-center items-center gap-2 hover:bg-gray-50">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5" />
-          Sign in with Google
-        </button>
-        
-        <p className="mt-4 text-center text-sm">
-           Don't have an account? <Link href="/register" className="text-blue-600 font-bold">Register</Link>
-        </p>
+          <form onSubmit={handleEmailLogin} className="space-y-3">
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+            
+            <div className="space-y-1">
+              <input 
+                type="password" 
+                placeholder="Password" 
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+              />
+              <div className="flex justify-end px-1">
+                <Link href="/forgot-password" className="text-white/40 hover:text-white transition-colors text-[10px]">
+                  Forgot Password?
+                </Link>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <div className="relative my-6">
+            
+            <div className="relative flex justify-center text-[10px] uppercase">
+              <span className="bg-transparent px-2 text-white/30 ">Or</span>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleGoogleLogin} 
+            className="w-full py-2.5 bg-white/90 text-gray-900 font-bold text-sm rounded-xl flex justify-center items-center gap-2 hover:bg-white transition-all active:scale-95"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-4" alt="G" />
+            Google
+          </button>
+
+          <p className="mt-6 text-center text-xs text-white/50">
+            New here?{" "}
+            <Link href="/register" className="text-white font-bold hover:text-blue-300 transition-colors">
+              Create an account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

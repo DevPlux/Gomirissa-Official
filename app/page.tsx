@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
+import Image from "next/image";
+import logo from "../assets/gomirissa.png";
 
 // --- Icons (same as before) ---
 const AnchorIcon = ({
@@ -976,125 +978,370 @@ export default function Home() {
         </section>
 
         {/* --- Contact Section --- */}
-        <section id="contact" className="py-24 bg-white">
+        <section
+          id="contact"
+          className="py-24 bg-gradient-to-b from-white to-slate-50"
+        >
           <div className="max-w-7xl mx-auto px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="bg-blue-600 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row"
+              className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row"
             >
-              <div className="lg:w-2/5 p-10 md:p-16 bg-blue-600 text-white flex flex-col justify-between relative overflow-hidden">
+              {/* Left side - Contact Info */}
+              <div className="lg:w-2/5 p-8 md:p-12 bg-gradient-to-br from-blue-600 to-blue-700 text-white flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
                 <div className="relative z-10">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                    Let&#39;s Plan Your Trip
-                  </h2>
-                  <p className="text-blue-100 mb-10 text-lg">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 mb-6">
+                      <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                      <span className="text-sm font-medium">
+                        Quick Response
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-3xl md:text-4xl font-bold mb-4"
+                  >
+                    Let&#39;s Plan Your <br />
+                    <span className="text-white/90">Mirissa Adventure</span>
+                  </motion.h2>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-blue-100 mb-10 text-lg leading-relaxed"
+                  >
                     Have questions about the weather, whale season, or custom
-                    packages? We&#39;re here to help.
-                  </p>
-                  <div className="space-y-8">
+                    packages? We&#39;re here to help within 24 hours.
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="space-y-6"
+                  >
                     {[
                       {
                         icon: <MapPinIcon />,
                         title: "Visit Us",
                         content: "49 A, Bandaramulla, Mirissa, Sri Lanka",
+                        link: "https://maps.google.com/?q=49+A+Bandaramulla+Mirissa+Sri+Lanka",
                       },
                       {
                         icon: <PhoneIcon />,
                         title: "Call / WhatsApp",
                         content: "+94 71 434 3478",
+                        link: "https://wa.me/94714343478",
                       },
                       {
                         icon: <MailIcon />,
                         title: "Email Us",
                         content: "muthutoursmirissa@gmail.com",
+                        link: "mailto:muthutoursmirissa@gmail.com",
                       },
                     ].map((item, idx) => (
-                      <motion.div
+                      <motion.a
                         key={idx}
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: idx * 0.1 }}
-                        className="flex items-start gap-4"
+                        whileHover={{ x: 8 }}
+                        className="flex items-start gap-4 group cursor-pointer"
                       >
-                        <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-md flex-shrink-0">
-                          {item.icon}
+                        <div className="w-12 h-12 rounded-2xl bg-white/20 group-hover:bg-white/30 transition-all duration-300 flex items-center justify-center backdrop-blur-md flex-shrink-0">
+                          <div className="text-white group-hover:scale-110 transition-transform duration-300">
+                            {item.icon}
+                          </div>
                         </div>
                         <div>
-                          <h3 className="font-semibold text-lg">
+                          <h3 className="font-semibold text-lg group-hover:text-white/90 transition-colors">
                             {item.title}
                           </h3>
-                          <p className="text-blue-100 opacity-90">
+                          <p className="text-blue-100 opacity-90 text-sm">
                             {item.content}
                           </p>
                         </div>
-                      </motion.div>
+                      </motion.a>
+                    ))}
+                  </motion.div>
+                </div>
+
+                {/* Trust Badges */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="relative z-10 mt-12 pt-8 border-t border-white/20"
+                >
+                  <div className="flex gap-4 justify-start flex-wrap">
+                    {[
+                      { text: "100% Local", icon: "🇱🇰" },
+                      { text: "Best Price", icon: "💰" },
+                      { text: "Free Cancellation", icon: "✓" },
+                    ].map((badge, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-2 text-sm bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full"
+                      >
+                        <span>{badge.icon}</span>
+                        <span>{badge.text}</span>
+                      </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               </div>
 
-              <div className="lg:w-3/5 bg-white p-10 md:p-16">
-                <div className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+              {/* Right side - Form */}
+              <div className="lg:w-3/5 bg-white p-8 md:p-12">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="space-y-6"
+                >
+                  <div className="mb-6">
+                    <h3 className="text-4xl font-bold text-slate-900 mb-2">
+                      Send an Inquiry
+                    </h3>
+                    <p className="text-slate-500">
+                      Fill out the form and we&#39;ll get back to you shortly
+                    </p>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => e.preventDefault()}
+                    className="space-y-5"
+                  >
+                    <div className="grid md:grid-cols-2 gap-5">
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          First Name *
+                        </Label>
+                        <Input
+                          placeholder="Enter your first name"
+                          className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          Last Name *
+                        </Label>
+                        <Input
+                          placeholder="Enter your last name"
+                          className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          required
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label className="text-slate-600">First Name</Label>
+                      <Label className="text-slate-700 font-semibold text-sm">
+                        Email Address *
+                      </Label>
                       <Input
-                        placeholder="John"
-                        className="bg-slate-50 border-slate-200 h-12"
+                        type="email"
+                        placeholder="john@example.com"
+                        className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        required
                       />
                     </div>
+
+                    <div className="grid md:grid-cols-2 gap-5">
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          Phone Number
+                        </Label>
+                        <Input
+                          type="tel"
+                          placeholder="+94 XX XXX XXXX"
+                          className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          Number of Guests
+                        </Label>
+                        <Select>
+                          <SelectTrigger className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500">
+                            <SelectValue placeholder="Select guests" />
+                          </SelectTrigger>
+                          <SelectContent
+                            position="popper"
+                            className="rounded-2xl z-[100] bg-white shadow-xl border-slate-200 max-h-[300px]"
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                              <SelectItem
+                                key={num}
+                                value={String(num)}
+                                className="rounded-xl cursor-pointer hover:bg-slate-100 text-black font-semibold"
+                              >
+                                {num} {num === 1 ? "Guest" : "Guests"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
                     <div className="space-y-2">
-                      <Label className="text-slate-600">Last Name</Label>
-                      <Input
-                        placeholder="Doe"
-                        className="bg-slate-50 border-slate-200 h-12"
+                      <Label className="text-slate-700 font-semibold text-sm">
+                        Interested In *
+                      </Label>
+                      <Select required>
+                        <SelectTrigger className="bg-slate-50 text-black border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500">
+                          <SelectValue placeholder="Select an adventure" />
+                        </SelectTrigger>
+                        <SelectContent
+                          position="popper"
+                          className="rounded-2xl z-[100] bg-white shadow-xl border-slate-200 text-black font-semibold"
+                        >
+                          <SelectItem
+                            value="deep-sea-fishing"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            🎣 Deep Sea Fishing
+                          </SelectItem>
+                          <SelectItem
+                            value="snorkeling-turtles"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            🐢 Snorkeling with Turtles
+                          </SelectItem>
+                          <SelectItem
+                            value="snorkeling-whales"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            🐋 Snorkeling with Whales
+                          </SelectItem>
+                          <SelectItem
+                            value="whale-watching"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            🐳 Whale Watching
+                          </SelectItem>
+                          <SelectItem
+                            value="custom"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            ⭐ Custom Package
+                          </SelectItem>
+                          <SelectItem
+                            value="other"
+                            className="rounded-xl cursor-pointer hover:bg-slate-100"
+                          >
+                            📝 General Inquiry
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-5">
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          Preferred Date
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            type="date"
+                            className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer"
+                            min={new Date().toISOString().split("T")[0]}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold text-sm">
+                          Preferred Time
+                        </Label>
+                        <Select>
+                          <SelectTrigger className="bg-slate-50 border-slate-200 h-12 rounded-2xl focus:ring-2 focus:ring-blue-500">
+                            <SelectValue placeholder="Select time" />
+                          </SelectTrigger>
+                          <SelectContent
+                            position="popper"
+                            className="rounded-2xl z-[100] bg-white shadow-xl border-slate-200 text-black font-semibold"
+                          >
+                            <SelectItem
+                              value="morning"
+                              className="rounded-xl cursor-pointer hover:bg-slate-100"
+                            >
+                              🌅 Morning (6:00 AM)
+                            </SelectItem>
+                            <SelectItem
+                              value="midday"
+                              className="rounded-xl cursor-pointer hover:bg-slate-100"
+                            >
+                              ☀️ Midday (11:00 AM)
+                            </SelectItem>
+                            <SelectItem
+                              value="afternoon"
+                              className="rounded-xl cursor-pointer hover:bg-slate-100"
+                            >
+                              🌤️ Afternoon (2:00 PM)
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-slate-700 font-semibold text-sm">
+                        Message *
+                      </Label>
+                      <Textarea
+                        placeholder="Tell us about your expectations, group size, special requests, or any questions you have..."
+                        className="bg-slate-50 border-slate-200 min-h-[130px] resize-none rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        required
                       />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-600">Email Address</Label>
-                    <Input
-                      type="email"
-                      placeholder="john@example.com"
-                      className="bg-slate-50 border-slate-200 h-12"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-600">Interested In</Label>
-                    <Select>
-                      <SelectTrigger className="bg-slate-50 border-slate-200 h-12">
-                        <SelectValue placeholder="Select an adventure" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fishing">
-                          Deep Sea Fishing
-                        </SelectItem>
-                        <SelectItem value="snorkeling">
-                          Snorkeling with Turtles
-                        </SelectItem>
-                        <SelectItem value="whales">
-                          Snorkeling with Whales
-                        </SelectItem>
-                        <SelectItem value="other">General Inquiry</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-slate-600">Message</Label>
-                    <Textarea
-                      placeholder="Tell us about your dates and group size..."
-                      className="bg-slate-50 border-slate-200 min-h-[150px] resize-none"
-                    />
-                  </div>
-                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white h-14 text-lg rounded-xl shadow-lg">
-                    Send Message
-                  </Button>
-                </div>
+
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white h-14 text-lg font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group"
+                    >
+                      <span>Send Message</span>
+                      <svg
+                        className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
+                      </svg>
+                    </motion.button>
+
+                    <p className="text-xs text-slate-400 text-center mt-4">
+                      By submitting, you agree to our privacy policy. We&#39;ll
+                      never share your information.
+                    </p>
+                  </form>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -1105,11 +1352,21 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-white mb-4">
-                  <div className="bg-blue-600 w-8 h-8 rounded-lg flex items-center justify-center">
-                    <WaveIcon />
+                {/* Logo + Brand Name */}
+                <div className="flex items-center gap-3 text-white">
+                  <div className="relative w-14 h-14 flex-shrink-0">
+                    <Image
+                      src={logo}
+                      alt="GoMirissa Fishing Tours Logo"
+                      fill
+                      className="object-contain rounded-2xl"
+                      priority
+                    />
                   </div>
-                  <span className="text-xl font-bold">gomirissa</span>
+
+                  <span className="text-xl font-bold tracking-wide">
+                    GoMirissa
+                  </span>
                 </div>
                 <p className="text-sm leading-relaxed">
                   Creating unforgettable ocean memories in Sri Lanka since 2010.

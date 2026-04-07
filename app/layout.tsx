@@ -1,16 +1,29 @@
 // app/layout.tsx
-import { AuthProvider } from "@/context/AuthContext"; // නිවැරදි path එක දෙන්න
+import type { Metadata } from "next";
+import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+import { Inter } from "next/font/google";
 
-export const metadata = {
-  title: "Mirissa Adventures",
-  description: "Explore the beauty of Mirissa with us!",
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+export const metadata: Metadata = {
+  title: "GoMirissa",
+  description: "Fishing Tours in Mirissa, Sri Lanka",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable}`}>
       <body>
         <AuthProvider>
           <Navbar />

@@ -140,6 +140,34 @@ export default function Navbar({ onBookNow }: NavbarProps) {
     router.push("/");
   };
 
+  // Smooth scroll function
+  const handleSmoothScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    e.preventDefault();
+
+    // Close mobile menu if open
+    setMobileMenuOpen(false);
+
+    // Get the target element
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+
+    if (element) {
+      // Smooth scroll to element with offset for fixed navbar
+      const navbarHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   // Prevent layout shift during auth check
   if (loading)
     return <nav className="fixed top-0 w-full h-20 z-50 bg-transparent"></nav>;
@@ -194,7 +222,8 @@ export default function Navbar({ onBookNow }: NavbarProps) {
               <a
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-all duration-200 relative group
+                onClick={(e) => handleSmoothScroll(e, link.href)}
+                className={`text-sm font-medium transition-all duration-200 relative group cursor-pointer
                   ${scrolled ? "text-slate-600" : "text-white/90"}`}
               >
                 {link.label}
@@ -423,8 +452,8 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     <a
                       key={link.href}
                       href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
+                      onClick={(e) => handleSmoothScroll(e, link.href)}
+                      className="flex items-center justify-between py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group cursor-pointer"
                     >
                       <span className="text-base font-medium">
                         {link.label}

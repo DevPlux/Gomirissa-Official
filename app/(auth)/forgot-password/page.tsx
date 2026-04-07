@@ -1,31 +1,156 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "../../../firebase/config";
+import { auth } from "@/firebase/config";
 import { sendPasswordResetEmail } from "firebase/auth";
 import Link from "next/link";
+import { Inter } from "next/font/google";
+import Swal from "sweetalert2";
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+// Define specific error type for Firebase auth errors
+interface FirebaseAuthError {
+  code: string;
+  message: string;
+}
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const showSuccessAlert = (message: string) => {
+    Swal.fire({
+      icon: "success",
+      title: "Email Sent!",
+      text: message,
+      confirmButtonColor: "#3B82F6",
+      confirmButtonText: "OK",
+      background: "#fff",
+      customClass: {
+        popup: "!rounded-3xl shadow-2xl",
+        confirmButton: "!rounded-xl px-6 py-2",
+      },
+    });
+  };
+
+  const showErrorAlert = (message: string) => {
+    Swal.fire({
+      icon: "error",
+      title: "Oops!",
+      text: message,
+      confirmButtonColor: "#3B82F6",
+      confirmButtonText: "Try Again",
+      background: "#fff",
+      customClass: {
+        popup: "!rounded-3xl !shadow-2xl",
+        confirmButton: "!rounded-xl px-6 py-2",
+      },
+    });
+  };
+
+  const showWarningAlert = (message: string) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Warning",
+      text: message,
+      confirmButtonColor: "#F59E0B",
+      confirmButtonText: "OK",
+      background: "#fff",
+      customClass: {
+        popup: "!rounded-3xl !shadow-2xl",
+        confirmButton: "!rounded-xl px-6 py-2",
+      },
+    });
+  };
+
+  const showLoadingAlert = () => {
+    Swal.fire({
+      title: "Please wait...",
+      text: "Sending reset link",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      background: "#fff",
+      customClass: {
+        popup: "!rounded-3xl !shadow-2xl",
+      },
+    });
+  };
+
+  const closeLoadingAlert = () => {
+    Swal.close();
+  };
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+
+    if (!email) {
+      showWarningAlert("Please enter your email address");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showWarningAlert("Please enter a valid email address");
+      return;
+    }
 
     try {
+      setIsLoading(true);
+      showLoadingAlert();
+
       await sendPasswordResetEmail(auth, email);
-      setMessage("Reset link sent! Please check your inbox.");
-    } catch (err: any) {
-      setError("Could not find an account with that email.");
+
+      closeLoadingAlert();
+      showSuccessAlert(
+        "Password reset link has been sent to your email. Please check your inbox and follow the instructions to reset your password.",
+      );
+
+      // Clear email field after successful send
+      setEmail("");
+    } catch (err: unknown) {
+      closeLoadingAlert();
+      setIsLoading(false);
+
+      const error = err as FirebaseAuthError;
+
+      switch (error.code) {
+        case "auth/invalid-email":
+          showErrorAlert(
+            "Invalid email format. Please check your email address.",
+          );
+          break;
+        case "auth/user-not-found":
+          showErrorAlert(
+            "No account found with this email address. Please register first.",
+          );
+          break;
+        case "auth/too-many-requests":
+          showErrorAlert("Too many requests. Please try again later.");
+          break;
+        case "auth/network-request-failed":
+          showErrorAlert(
+            "Network error. Please check your internet connection.",
+          );
+          break;
+        default:
+          showErrorAlert("Unable to send reset link. Please try again later.");
+      }
     }
   };
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6"
+      className={`min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6 ${inter.variable} font-sans`}
       style={{ backgroundImage: "url('/images/sea bg5.jpg')" }}
     >
       {/* Compact Glass Card */}
@@ -40,43 +165,34 @@ export default function ForgotPassword() {
             </p>
           </div>
 
-          {message && (
-            <div className="mb-4 p-2 bg-green-500/20 border border-green-500/40 rounded-lg text-green-100 text-[10px] text-center animate-pulse">
-              {message}
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-4 p-2 bg-red-500/20 border border-red-500/40 rounded-lg text-red-100 text-[10px] text-center">
-              {error}
-            </div>
-          )}
-
           <form onSubmit={handleReset} className="space-y-4">
             <input
               type="email"
               placeholder="Enter your email"
-              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+              className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all disabled:opacity-50"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
               required
             />
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95"
+              disabled={isLoading}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Reset Link
+              {isLoading ? "Sending..." : "Send Reset Link"}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <Link
               href="/login"
-              className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-2"
+              className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-2 group"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-3 w-3"
+                className="h-3 w-3 group-hover:-translate-x-0.5 transition-transform"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

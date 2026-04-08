@@ -23,7 +23,23 @@ import Image from "next/image";
 import logo from "../assets/gomirissa.png";
 
 import BookingDialog from "@/components/BookingDialog";
-import { tours, TourId } from "@/lib/booking";
+import { tours, TourId, getTourPricingMeta } from "@/lib/booking";
+
+import { Calendar } from "lucide-react"; // or any icon you prefer
+
+// Define variants with proper Framer Motion typing
+const iconVariants: Variants = {
+  animate: {
+    scale: [1, 1.2, 1],
+    rotate: [0, 5, -5, 0],
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      repeatType: "loop",
+      ease: "easeInOut",
+    },
+  },
+};
 
 // --- Icons (same as before) ---
 const AnchorIcon = ({
@@ -386,9 +402,16 @@ export default function Home() {
               <Button
                 size="lg"
                 onClick={() => setBookingOpen(true)}
-                className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-10 py-7 text-lg shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)] transition-transform hover:scale-105"
+                className="bg-blue-600 hover:bg-blue-500 text-white rounded-full px-10 py-7 text-lg shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)] transition-transform hover:scale-105 group"
               >
-                Start Adventure
+                <motion.span
+                  variants={iconVariants}
+                  animate="animate"
+                  className="inline-block mr-2"
+                >
+                  <Calendar size={24} />
+                </motion.span>
+                Book Your Adventure Now
               </Button>
               <ScrollToSection href="#tours">
                 <Button
@@ -464,80 +487,87 @@ export default function Home() {
               viewport={{ once: true, amount: 0.2 }}
               className="grid grid-cols-1 lg:grid-cols-3 gap-8"
             >
-              {tours.map((tour) => (
-                <motion.div
-                  key={tour.id}
-                  variants={cardVariants}
-                  whileHover="hover"
-                >
-                  <Card className="group border-0 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full">
-                    <div className="relative h-64 overflow-hidden">
-                      <motion.img
-                        src={tour.image}
-                        alt={tour.title}
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.7 }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
-                      <Badge
-                        className={`absolute top-4 left-4 border-0 px-3 py-1.5 ${tour.badgeColor} shadow-lg backdrop-blur-sm`}
-                      >
-                        {tour.badge}
-                      </Badge>
-                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
-                        <div>
-                          <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md mb-2 w-fit">
-                            <ClockIcon /> {tour.duration}
-                          </div>
-                          <h3 className="text-2xl font-bold leading-tight">
-                            {tour.title}
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
+              {tours.map((tour) => {
+                const pricing = getTourPricingMeta(tour.id);
 
-                    <CardContent className="p-6 flex-grow">
-                      <p className="text-slate-600 mb-6 leading-relaxed">
-                        {tour.description}
-                      </p>
-                      <div className="space-y-3 mb-6">
-                        {tour.features.slice(0, 4).map((feature, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-start gap-3 text-sm text-slate-700"
-                          >
-                            <div className="text-green-500 mt-0.5">
-                              <CheckIcon />
+                return (
+                  <motion.div
+                    key={tour.id}
+                    variants={cardVariants}
+                    whileHover="hover"
+                  >
+                    <Card className="group border-0 bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full">
+                      <div className="relative h-64 overflow-hidden">
+                        <motion.img
+                          src={tour.image}
+                          alt={tour.title}
+                          className="w-full h-full object-cover"
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ duration: 0.7 }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+                        <Badge
+                          className={`absolute top-4 left-4 border-0 px-3 py-1.5 ${tour.badgeColor} shadow-lg backdrop-blur-sm`}
+                        >
+                          {tour.badge}
+                        </Badge>
+                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
+                          <div>
+                            <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md mb-2 w-fit">
+                              <ClockIcon /> {tour.duration}
                             </div>
-                            <span>{feature}</span>
+                            <h3 className="text-2xl font-bold leading-tight">
+                              {tour.title}
+                            </h3>
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-
-                    <CardFooter className="p-6 pt-5 mt-auto flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
-                      <div className="flex flex-col">
-                        <span className="text-sm text-slate-500">
-                          Starting from
-                        </span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-2xl font-bold text-slate-900">
-                            ${tour.price}
-                          </span>
-                          <span className="text-slate-500">/person</span>
                         </div>
                       </div>
-                      <Button
-                        onClick={() => handleBookNow(tour.id)}
-                        className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
-                      >
-                        Book Now
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
+
+                      <CardContent className="p-6 flex-grow">
+                        <p className="text-slate-600 mb-6 leading-relaxed">
+                          {tour.description}
+                        </p>
+                        <div className="space-y-3 mb-6">
+                          {tour.features.slice(0, 4).map((feature, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-start gap-3 text-sm text-slate-700"
+                            >
+                              <div className="text-green-500 mt-0.5">
+                                <CheckIcon />
+                              </div>
+                              <span>{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+
+                      <CardFooter className="p-6 pt-5 mt-auto flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
+                        <div className="flex flex-col">
+                          <p className="text-xs text-slate-500 mb-1 uppercase tracking-wide">
+                            Pricing
+                          </p>
+
+                          <p className="text-2xl font-bold text-slate-900">
+                            {pricing.label}
+                          </p>
+
+                          <p className="text-xs text-slate-500 mt-1">
+                            {pricing.note}
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={() => handleBookNow(tour.id)}
+                          className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
+                        >
+                          Book Now
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </div>
         </section>

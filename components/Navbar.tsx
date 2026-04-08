@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
 import logo from "../assets/gomirissa.png";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
+// --- Icons ---
 const MenuIcon = () => (
   <svg
     className="w-6 h-6"
@@ -109,10 +110,15 @@ const navLinks = [
 export default function Navbar({ onBookNow }: NavbarProps) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+
   const profileRef = useRef<HTMLDivElement>(null);
+
+  const isAdmin = user?.role === "admin";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -120,7 +126,6 @@ export default function Navbar({ onBookNow }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -135,54 +140,68 @@ export default function Navbar({ onBookNow }: NavbarProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle logo click to navigate to home
-  const handleLogoClick = () => {
-    router.push("/");
-  };
-
-  // Smooth scroll function
-  const handleSmoothScroll = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string,
-  ) => {
-    e.preventDefault();
-
-    // Close mobile menu if open
+  const navigateToSection = (sectionId: string) => {
     setMobileMenuOpen(false);
 
-    // Get the target element
-    const targetId = href.replace("#", "");
-    const element = document.getElementById(targetId);
+    if (pathname !== "/") {
+      router.push(`/#${sectionId}`);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const navbarHeight = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - navbarHeight;
 
-    if (element) {
-      // Smooth scroll to element with offset for fixed navbar
-      const navbarHeight = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition =
-        elementPosition + window.pageYOffset - navbarHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth",
+        });
+      }
     }
   };
 
-  // Prevent layout shift during auth check
-  if (loading)
-    return <nav className="fixed top-0 w-full h-20 z-50 bg-transparent"></nav>;
+  const handleLogoClick = () => {
+    if (pathname !== "/") {
+      router.push("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    if (pathname === "/" && window.location.hash) {
+      const sectionId = window.location.hash.replace("#", "");
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const navbarHeight = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition =
+            elementPosition + window.pageYOffset - navbarHeight;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+    }
+  }, [pathname]);
+
+  if (loading) {
+    return <nav className="fixed top-0 w-full h-20 z-50 bg-transparent" />;
+  }
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out
-        ${
-          scrolled
-            ? "bg-white/80 backdrop-blur-xl shadow-lg border-white/20 py-3"
-            : "bg-gradient-to-b from-black/30 to-transparent border-transparent py-5"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
+        scrolled
+          ? "bg-white/80 backdrop-blur-xl shadow-lg border-white/20 py-3"
+          : "bg-gradient-to-b from-black/30 to-transparent border-transparent py-5"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo - Clickable to navigate home */}
+        {/* Logo */}
         <div
           onClick={handleLogoClick}
           className="flex items-center gap-3 group cursor-pointer"
@@ -205,40 +224,48 @@ export default function Navbar({ onBookNow }: NavbarProps) {
           </div>
 
           <span
-            className={`text-xl sm:mt-1 md:text-3xl font-bold tracking-tight transition-all duration-300
-              ${scrolled ? "text-slate-900" : "text-white"} 
-              bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text ${
-                !scrolled && "text-transparent bg-clip-text"
-              }`}
+            className={`text-xl md:text-2xl font-bold tracking-tight transition-all duration-300 ${
+              scrolled ? "text-slate-900" : "text-white"
+            } ${
+              !scrolled
+                ? "text-transparent bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text"
+                : ""
+            }`}
           >
             GoMirissa
           </span>
         </div>
 
-        {/* Desktop Navigation & Auth */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          <div className="flex items-center gap-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleSmoothScroll(e, link.href)}
-                className={`text-sm font-medium transition-all duration-200 relative group cursor-pointer
-                  ${scrolled ? "text-slate-600" : "text-white/90"}`}
-              >
-                {link.label}
-                <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full
-                  ${scrolled ? "bg-blue-500" : "bg-white"}`}
-                />
-              </a>
-            ))}
-          </div>
+          {!isAdmin && (
+            <>
+              <div className="flex items-center gap-6">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() =>
+                      navigateToSection(link.href.replace("#", ""))
+                    }
+                    className={`text-sm font-medium transition-all duration-200 relative group cursor-pointer ${
+                      scrolled ? "text-slate-600" : "text-white/90"
+                    }`}
+                  >
+                    {link.label}
+                    <span
+                      className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+                        scrolled ? "bg-blue-500" : "bg-white"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
 
-          <div className="h-6 w-px bg-gradient-to-b from-transparent via-slate-300 to-transparent" />
+              <div className="h-6 w-px bg-gradient-to-b from-transparent via-slate-300 to-transparent" />
+            </>
+          )}
 
           {user ? (
-            /* Modern User Profile Dropdown */
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -246,14 +273,17 @@ export default function Navbar({ onBookNow }: NavbarProps) {
               >
                 <div className="text-right hidden lg:block">
                   <p
-                    className={`text-sm font-semibold ${scrolled ? "text-gray-800" : "text-white"}`}
+                    className={`text-sm font-semibold ${
+                      scrolled ? "text-gray-800" : "text-white"
+                    }`}
                   >
                     {user.displayName || "User"}
                   </p>
                   <p className="text-xs font-medium text-blue-500 uppercase tracking-wider">
-                    {user.role}
+                    {isAdmin ? "Admin" : "Member"}
                   </p>
                 </div>
+
                 <div className="relative">
                   <img
                     src={
@@ -268,13 +298,12 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                         `https://ui-avatars.com/api/?name=${user.displayName || user.email}&background=3B82F6&color=fff&bold=true`;
                     }}
                   />
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
                 </div>
               </button>
 
               {profileOpen && (
                 <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
-                  {/* User Info Header */}
                   <div className="px-4 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
                     <div className="flex items-center gap-3">
                       <img
@@ -293,37 +322,40 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                           {user.email}
                         </p>
                         <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
-                          {user.role === "admin" ? "Administrator" : "Member"}
+                          {isAdmin ? "Administrator" : "Member"}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Dropdown Items */}
                   <div className="py-2">
-                    <Link
-                      href="/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                        <UserIcon />
-                      </div>
-                      <span className="font-medium">My Profile</span>
-                    </Link>
+                    {!isAdmin && (
+                      <>
+                        <Link
+                          href="/profile"
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <UserIcon />
+                          </div>
+                          <span className="font-medium">My Profile</span>
+                        </Link>
 
-                    <Link
-                      href="/my-bookings"
-                      onClick={() => setProfileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                        <CalendarIcon />
-                      </div>
-                      <span className="font-medium">My Bookings</span>
-                    </Link>
+                        <Link
+                          href="/my-bookings"
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <CalendarIcon />
+                          </div>
+                          <span className="font-medium">My Bookings</span>
+                        </Link>
+                      </>
+                    )}
 
-                    {user.role === "admin" && (
+                    {isAdmin && (
                       <Link
                         href="/admin/dashboard"
                         onClick={() => setProfileOpen(false)}
@@ -336,7 +368,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                       </Link>
                     )}
 
-                    <div className="border-t border-gray-100 my-1"></div>
+                    <div className="border-t border-gray-100 my-1" />
 
                     <button
                       onClick={() => {
@@ -355,16 +387,14 @@ export default function Navbar({ onBookNow }: NavbarProps) {
               )}
             </div>
           ) : (
-            /* Login/Register Buttons */
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className={`text-sm font-semibold px-4 py-2 rounded-2xl transition-all duration-200
-                  ${
-                    scrolled
-                      ? "text-blue-600 hover:bg-blue-50"
-                      : "text-white hover:bg-white/10"
-                  }`}
+                className={`text-sm font-semibold px-4 py-2 rounded-2xl transition-all duration-200 ${
+                  scrolled
+                    ? "text-blue-600 hover:bg-blue-50"
+                    : "text-white hover:bg-white/10"
+                }`}
               >
                 Sign In
               </Link>
@@ -377,13 +407,13 @@ export default function Navbar({ onBookNow }: NavbarProps) {
           )}
         </div>
 
-        {/* Modern Mobile Menu Toggle */}
+        {/* Mobile Navigation */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="md:hidden">
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-full transition-all duration-300  ${
+              className={`rounded-full transition-all duration-300 ${
                 scrolled
                   ? "text-slate-900 hover:bg-gray-100 bg-gray-500/20"
                   : "text-white hover:bg-white/20 bg-gray-500/50"
@@ -392,9 +422,9 @@ export default function Navbar({ onBookNow }: NavbarProps) {
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </Button>
           </SheetTrigger>
+
           <SheetContent side="right" className="w-[85vw] max-w-md bg-white p-0">
             <div className="flex flex-col h-full">
-              {/* Mobile Menu Header */}
               <div className="px-6 pt-8 pb-4 bg-gradient-to-r from-blue-600 to-blue-900">
                 <div className="flex items-center justify-between mb-6">
                   <div
@@ -437,7 +467,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                           {user.email}
                         </p>
                         <span className="inline-block mt-1 px-2 py-0.5 bg-white/20 text-white text-xs rounded-full">
-                          {user.role === "admin" ? "Admin" : "Member"}
+                          {isAdmin ? "Admin" : "Member"}
                         </span>
                       </div>
                     </div>
@@ -445,36 +475,39 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                 )}
               </div>
 
-              {/* Navigation Links */}
               <div className="flex-1 px-6 py-6 overflow-y-auto">
-                <div className="space-y-1">
-                  {navLinks.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={(e) => handleSmoothScroll(e, link.href)}
-                      className="flex items-center justify-between py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group cursor-pointer"
-                    >
-                      <span className="text-base font-medium">
-                        {link.label}
-                      </span>
-                      <svg
-                        className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </a>
-                  ))}
-                </div>
+                {!isAdmin && (
+                  <>
+                    <div className="space-y-1">
+                      {navLinks.map((link) => (
+                        <button
+                          key={link.href}
+                          onClick={() =>
+                            navigateToSection(link.href.replace("#", ""))
+                          }
+                          className="flex items-center justify-between w-full py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group cursor-pointer"
+                        >
+                          <span className="text-base font-medium">
+                            {link.label}
+                          </span>
+                          <svg
+                            className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
 
-                <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-6" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-6" />
+                  </>
+                )}
 
-                {/* Quick Actions for Logged In Users */}
-                {user && (
+                {user && !isAdmin && (
                   <div className="space-y-2 mb-6">
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">
                       Quick Actions
@@ -488,7 +521,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                       <span>My Profile</span>
                     </Link>
                     <Link
-                      href="/bookings"
+                      href="/my-bookings"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
                     >
@@ -498,7 +531,34 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                   </div>
                 )}
 
-                {/* Auth Buttons */}
+                {isAdmin && (
+                  <div className="space-y-2 mb-6">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">
+                      Admin
+                    </p>
+                    <Link
+                      href="/admin/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                    >
+                      <DashboardIcon />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </div>
+                )}
+
+                {!isAdmin && onBookNow && (
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onBookNow();
+                    }}
+                    className="w-full py-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md mb-4"
+                  >
+                    Book Now
+                  </Button>
+                )}
+
                 <div className="space-y-3 font-semibold">
                   {!user ? (
                     <>
@@ -513,6 +573,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                           Sign In
                         </Button>
                       </Link>
+
                       <Link
                         href="/register"
                         onClick={() => setMobileMenuOpen(false)}
@@ -538,7 +599,6 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="px-6 py-4 border-t border-gray-100">
                 <p className="text-xs text-center text-gray-400">
                   © 2026 GoMirissa. All rights reserved.

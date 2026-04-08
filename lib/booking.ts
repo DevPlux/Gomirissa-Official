@@ -22,6 +22,21 @@ export interface Tour {
   badgeColor: string;
 }
 
+export interface FishingMethodOption {
+  value: FishingMethod;
+  label: string;
+  shortLabel: string;
+  catches: string;
+  description: string;
+  cardClassName: string;
+}
+
+export interface CameraOption {
+  value: SnorkelCameraOption;
+  label: string;
+  shortLabel: string;
+}
+
 export const tours: Tour[] = [
   {
     id: "deep-sea-fishing",
@@ -92,6 +107,71 @@ export const timeSlots: { value: TimeSlot; label: string }[] = [
   { value: "midday", label: "Midday (11:00 AM)" },
   { value: "afternoon", label: "Afternoon (2:00 PM)" },
 ];
+
+export const fishingMethodOptions: FishingMethodOption[] = [
+  {
+    value: "jigging",
+    label: "⭐ Jigging (Recommended) — GT, Kingfish, Grouper",
+    shortLabel: "⭐ Jigging (Recommended)",
+    catches: "Giant Trevally (GT), Kingfish, Grouper",
+    description: "Multiple rods around the boat — best action!",
+    cardClassName: "bg-blue-100 text-amber-900",
+  },
+  {
+    value: "trolling",
+    label: "Trolling — Tuna, Sailfish, Jackfish, Kingfish",
+    shortLabel: "Trolling",
+    catches: "Tuna, Jackfish, Kingfish, Sailfish etc...",
+    description: "2 rods trolling the open water",
+    cardClassName: "bg-amber-100 text-amber-900",
+  },
+];
+
+export const snorkelCameraOptions: CameraOption[] = [
+  {
+    value: "without_camera",
+    label: "Without Camera — $20/person",
+    shortLabel: "Without Camera",
+  },
+  {
+    value: "with_camera",
+    label: "With Free Camera — $35/person",
+    shortLabel: "With Free Camera",
+  },
+  {
+    value: "camera_only",
+    label: "Camera Rental Only — $20 flat",
+    shortLabel: "Camera Rental Only",
+  },
+];
+
+export function getTourPricingMeta(tourId: TourId) {
+  switch (tourId) {
+    case "deep-sea-fishing":
+      return {
+        label: "From $100/person",
+        note: "Solo trip: $250 flat",
+      };
+
+    case "snorkeling":
+      return {
+        label: "From $20/person",
+        note: "Camera options available",
+      };
+
+    case "snorkeling-whales":
+      return {
+        label: "From $150/person",
+        note: "Solo trip: $300",
+      };
+
+    default:
+      return {
+        label: "",
+        note: "",
+      };
+  }
+}
 
 export function calculatePrice(
   tourId: TourId | "",

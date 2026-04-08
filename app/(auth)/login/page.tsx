@@ -181,7 +181,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className={`min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6 ${inter.variable} font-sans`}
+      className={`min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat p-4 sm:p-6 ${inter.className} font-sans`}
       style={{ backgroundImage: "url('/images/sea bg7.jpg')" }}
     >
       {/* Glass Card */}

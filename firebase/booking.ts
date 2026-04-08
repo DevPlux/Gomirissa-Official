@@ -21,6 +21,8 @@ import {
 
 export type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
 
+export type PaymentStatus = "unpaid" | "paid" | "refunded";
+
 export interface BookingPayload {
   userId: string;
   userEmail: string | null;
@@ -37,7 +39,7 @@ export interface BookingPayload {
   snorkelCamera: SnorkelCameraOption | null;
   specialNotes: string;
   status: BookingStatus;
-  paymentStatus: "unpaid" | "paid" | "refunded";
+  paymentStatus: PaymentStatus;
 }
 
 export interface Booking extends BookingPayload {
@@ -71,6 +73,16 @@ export async function getUserBookings(userId: string): Promise<Booking[]> {
   }));
 }
 
+export async function getAllBookings(): Promise<Booking[]> {
+  const q = query(collection(db, "bookings"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((docSnap) => ({
+    id: docSnap.id,
+    ...(docSnap.data() as Omit<Booking, "id">),
+  }));
+}
+
 export async function getBookingById(id: string): Promise<Booking | null> {
   const ref = doc(db, "bookings", id);
   const snap = await getDoc(ref);
@@ -91,6 +103,30 @@ export async function updateBookingStatus(
 
   await updateDoc(ref, {
     status,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateBookingPaymentStatus(
+  bookingId: string,
+  paymentStatus: PaymentStatus,
+) {
+  const ref = doc(db, "bookings", bookingId);
+
+  await updateDoc(ref, {
+    paymentStatus,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function updateBookingAdminFields(
+  bookingId: string,
+  data: Partial<Pick<Booking, "status" | "paymentStatus">>,
+) {
+  const ref = doc(db, "bookings", bookingId);
+
+  await updateDoc(ref, {
+    ...data,
     updatedAt: serverTimestamp(),
   });
 }

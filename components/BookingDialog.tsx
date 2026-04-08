@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { Inter } from "next/font/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,8 +18,10 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import {
   calculatePrice,
+  fishingMethodOptions,
   FishingMethod,
   getTourById,
+  snorkelCameraOptions,
   SnorkelCameraOption,
   TimeSlot,
   timeSlots,
@@ -26,13 +29,11 @@ import {
   tours,
 } from "@/lib/booking";
 import { createBooking } from "@/firebase/booking";
-import { Inter } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   display: "swap",
-  variable: "--font-inter",
 });
 
 interface BookingDialogProps {
@@ -43,6 +44,12 @@ interface BookingDialogProps {
 
 type BookingStep = "details" | "date";
 
+const slotTimeMap: Record<TimeSlot, { hour: number; minute: number }> = {
+  morning: { hour: 6, minute: 0 },
+  midday: { hour: 11, minute: 0 },
+  afternoon: { hour: 14, minute: 0 },
+};
+
 export default function BookingDialog({
   open,
   onOpenChange,
@@ -50,6 +57,7 @@ export default function BookingDialog({
 }: BookingDialogProps) {
   const { user } = useAuth();
   const router = useRouter();
+  const dialogContentRef = useRef<HTMLDivElement | null>(null);
 
   const [activeStep, setActiveStep] = useState<BookingStep>("details");
 
@@ -91,6 +99,13 @@ export default function BookingDialog({
     [selectedTour],
   );
 
+  const selectedFishingMethodData = useMemo(
+    () =>
+      fishingMethodOptions.find((option) => option.value === fishingMethod) ||
+      fishingMethodOptions[0],
+    [fishingMethod],
+  );
+
   const maxGuests = selectedTourData?.maxGuests ?? 10;
 
   const { total: totalPrice, breakdown: priceBreakdown } = useMemo(
@@ -99,12 +114,55 @@ export default function BookingDialog({
   );
 
   const today = useMemo(() => {
-    return new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().split("T")[0];
   }, []);
+
+  const isSameLocalDate = (dateA: Date, dateB: Date) => {
+    return (
+      dateA.getFullYear() === dateB.getFullYear() &&
+      dateA.getMonth() === dateB.getMonth() &&
+      dateA.getDate() === dateB.getDate()
+    );
+  };
+
+  const isPastTimeSlot = (dateString: string, slot: TimeSlot) => {
+    if (!dateString) return false;
+
+    const now = new Date();
+    const selected = new Date(`${dateString}T00:00:00`);
+
+    if (!isSameLocalDate(now, selected)) return false;
+
+    const slotTime = slotTimeMap[slot];
+    const slotDateTime = new Date(selected);
+    slotDateTime.setHours(slotTime.hour, slotTime.minute, 0, 0);
+
+    return now.getTime() >= slotDateTime.getTime();
+  };
+
+  const availableTimeSlots = useMemo(() => {
+    return timeSlots.filter(
+      (slot) => !isPastTimeSlot(selectedDate, slot.value),
+    );
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const selectedStillValid = availableTimeSlots.some(
+      (slot) => slot.value === timeSlot,
+    );
+
+    if (!selectedStillValid && availableTimeSlots.length > 0) {
+      setTimeSlot(availableTimeSlots[0].value);
+    }
+  }, [selectedDate, timeSlot, availableTimeSlots]);
 
   const formattedSelectedDate = useMemo(() => {
     if (!selectedDate) return "";
-    const date = new Date(selectedDate);
+    const date = new Date(`${selectedDate}T00:00:00`);
     return date.toLocaleDateString(undefined, {
       weekday: "long",
       year: "numeric",
@@ -113,13 +171,42 @@ export default function BookingDialog({
     });
   }, [selectedDate]);
 
+  const handleTourChange = (tourId: TourId | "") => {
+    setSelectedTour(tourId);
+    setGuestCount(1);
+    setSnorkelCamera("without_camera");
+    setFishingMethod("jigging");
+  };
+
+  const showDialogAlert = (options: {
+    icon: "warning" | "error" | "success";
+    title: string;
+    text: string;
+  }) => {
+    return Swal.fire({
+      ...options,
+      target: dialogContentRef.current ?? undefined,
+      heightAuto: false,
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+      confirmButtonColor: "#2563eb",
+      customClass: {
+        container: "!z-[9999]",
+        popup: "!rounded-3xl !shadow-2xl",
+        confirmButton: "!rounded-xl px-6 py-2",
+      },
+      didOpen: () => {
+        Swal.getConfirmButton()?.focus();
+      },
+    });
+  };
+
   const validateBooking = () => {
     if (!user) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Login required",
         text: "Please sign in before placing a booking request.",
-        confirmButtonColor: "#2563eb",
       }).then(() => {
         onOpenChange(false);
         router.push("/login");
@@ -128,62 +215,76 @@ export default function BookingDialog({
     }
 
     if (!selectedTourData) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Select a package",
         text: "Please choose a tour package.",
-        confirmButtonColor: "#2563eb",
       });
       return false;
     }
 
     if (!selectedDate) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Select a date",
         text: "Please choose your preferred booking date.",
-        confirmButtonColor: "#2563eb",
+      });
+      setActiveStep("date");
+      return false;
+    }
+
+    if (selectedDate && availableTimeSlots.length === 0) {
+      showDialogAlert({
+        icon: "warning",
+        title: "No available slots today",
+        text: "All available time slots for today have already passed. Please choose another date.",
+      });
+      setActiveStep("date");
+      return false;
+    }
+
+    if (selectedDate && isPastTimeSlot(selectedDate, timeSlot)) {
+      showDialogAlert({
+        icon: "warning",
+        title: "Invalid time slot",
+        text: "The selected time slot has already passed for today. Please choose a later time.",
       });
       setActiveStep("date");
       return false;
     }
 
     if (!fullName.trim()) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Missing name",
         text: "Your name is missing. Please update your account profile or sign in again.",
-        confirmButtonColor: "#2563eb",
       });
       return false;
     }
 
     if (!email.trim()) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Missing email",
         text: "Your email is missing. Please update your account profile or sign in again.",
-        confirmButtonColor: "#2563eb",
       });
       return false;
     }
 
     if (!phone.trim()) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Phone required",
         text: "Please enter your phone or WhatsApp number.",
-        confirmButtonColor: "#2563eb",
       });
       return false;
     }
 
     if (guestCount < 1 || guestCount > maxGuests) {
-      Swal.fire({
+      showDialogAlert({
         icon: "warning",
         title: "Invalid guest count",
         text: `This package allows up to ${maxGuests} guests.`,
-        confirmButtonColor: "#2563eb",
       });
       return false;
     }
@@ -206,7 +307,7 @@ export default function BookingDialog({
         userPhone: phone.trim(),
         tourId: selectedTourData.id,
         tourTitle: selectedTourData.title,
-        bookingDate: new Date(selectedDate).toISOString(),
+        bookingDate: new Date(`${selectedDate}T00:00:00`).toISOString(),
         timeSlot,
         guestCount,
         totalPrice,
@@ -220,23 +321,32 @@ export default function BookingDialog({
         paymentStatus: "unpaid",
       });
 
+      onOpenChange(false);
+
       await Swal.fire({
         icon: "success",
         title: "Booking request sent",
         text: "Your booking request has been saved successfully.",
-        confirmButtonColor: "#2563eb",
+        showConfirmButton: false,
+        timer: 1600,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        background: "#fff",
+        customClass: {
+          container: "!z-[9999]",
+          popup: "!rounded-3xl shadow-2xl",
+        },
       });
 
-      onOpenChange(false);
       router.push("/my-bookings");
     } catch (error) {
       console.error("Booking creation failed:", error);
 
-      Swal.fire({
+      showDialogAlert({
         icon: "error",
         title: "Booking failed",
         text: "Something went wrong while saving your booking. Please try again.",
-        confirmButtonColor: "#2563eb",
       });
     } finally {
       setSubmitting(false);
@@ -246,7 +356,8 @@ export default function BookingDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`max-w-3xl bg-white h-220 p-0 overflow-hidden gap-0 rounded-3xl sm:rounded-[28px] border-0 shadow-2xl ${inter.className}`}
+        ref={dialogContentRef}
+        className={`max-w-3xl bg-white p-0 overflow-hidden gap-0 sm:rounded-[1.5rem] border-0 shadow-2xl ${inter.className}`}
       >
         <div className="bg-gradient-to-br from-slate-950 via-slate-800 to-blue-700 px-6 py-6 text-white">
           <DialogHeader>
@@ -260,7 +371,6 @@ export default function BookingDialog({
         </div>
 
         <div className="p-5 md:p-6 max-h-[78vh] overflow-y-auto bg-slate-50">
-          {/* Step Switcher */}
           <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-200/80 p-1 mb-6">
             <button
               type="button"
@@ -288,7 +398,6 @@ export default function BookingDialog({
 
           {activeStep === "details" ? (
             <div className="space-y-6">
-              {/* Package Selection */}
               <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-900 mb-4">
                   Tour Selection
@@ -301,12 +410,9 @@ export default function BookingDialog({
                     </Label>
                     <select
                       value={selectedTour}
-                      onChange={(e) => {
-                        setSelectedTour(e.target.value as TourId);
-                        setGuestCount(1);
-                        setSnorkelCamera("without_camera");
-                        setFishingMethod("jigging");
-                      }}
+                      onChange={(e) =>
+                        handleTourChange(e.target.value as TourId)
+                      }
                       className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="" disabled>
@@ -321,53 +427,119 @@ export default function BookingDialog({
                   </div>
 
                   {selectedTour === "deep-sea-fishing" && (
-                    <div className="space-y-2">
-                      <Label className="text-slate-700 font-semibold">
-                        Fishing Method
-                      </Label>
-                      <select
-                        value={fishingMethod}
-                        onChange={(e) =>
-                          setFishingMethod(e.target.value as FishingMethod)
-                        }
-                        className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="jigging">
-                          ⭐ Jigging (Recommended) — GT, Kingfish, Grouper
-                        </option>
-                        <option value="trolling">
-                          Trolling — Tuna, Sailfish, Jackfish, Kingfish
-                        </option>
-                      </select>
-                    </div>
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold">
+                          Fishing Method
+                        </Label>
+                        <select
+                          value={fishingMethod}
+                          onChange={(e) =>
+                            setFishingMethod(e.target.value as FishingMethod)
+                          }
+                          className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          {fishingMethodOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-slate-800 space-y-1">
+                        <p className="font-semibold mb-2 text-amber-900">
+                          🎣 Fishing Tour Pricing (max 7 guests)
+                        </p>
+                        <p>
+                          • 1 person — <strong>$250</strong> flat rate
+                        </p>
+                        <p>
+                          • 2 persons — <strong>$125/person</strong> ($250
+                          total)
+                        </p>
+                        <p>
+                          • 3–7 persons — <strong>$100/person</strong>
+                        </p>
+
+                        <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
+                          <p className="font-semibold text-amber-900">
+                            🐟 Fishing Methods
+                          </p>
+                          <div
+                            className={`rounded-lg p-3 mt-1 ${selectedFishingMethodData.cardClassName}`}
+                          >
+                            <p className="font-semibold">
+                              {selectedFishingMethodData.shortLabel}
+                            </p>
+                            <p className="mt-1">
+                              {selectedFishingMethodData.description}
+                            </p>
+                            <p className="mt-0.5">
+                              Catches:{" "}
+                              <strong>
+                                {selectedFishingMethodData.catches}
+                              </strong>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   )}
 
                   {selectedTour === "snorkeling" && (
-                    <div className="space-y-2">
-                      <Label className="text-slate-700 font-semibold">
-                        Camera Option
-                      </Label>
-                      <select
-                        value={snorkelCamera}
-                        onChange={(e) => {
-                          const value = e.target.value as SnorkelCameraOption;
-                          setSnorkelCamera(value);
-                          if (value === "camera_only") {
-                            setGuestCount(1);
-                          }
-                        }}
-                        className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="without_camera">
-                          Without Camera — $20/person
-                        </option>
-                        <option value="with_camera">
-                          With Free Camera — $35/person
-                        </option>
-                        <option value="camera_only">
-                          Camera Rental Only — $20 flat
-                        </option>
-                      </select>
+                    <>
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800 space-y-1">
+                        <p className="font-semibold mb-2 text-blue-900">
+                          🐢 Snorkeling with Turtles Pricing
+                        </p>
+                        <p>
+                          • Without camera — <strong>$20/person</strong>
+                        </p>
+                        <p>
+                          • With free camera — <strong>$35/person</strong>
+                        </p>
+                        <p>
+                          • Camera rental only — <strong>$20</strong> flat
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-slate-700 font-semibold">
+                          Camera Option
+                        </Label>
+                        <select
+                          value={snorkelCamera}
+                          onChange={(e) => {
+                            const value = e.target.value as SnorkelCameraOption;
+                            setSnorkelCamera(value);
+                            if (value === "camera_only") {
+                              setGuestCount(1);
+                            }
+                          }}
+                          className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          {snorkelCameraOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {selectedTour === "snorkeling-whales" && (
+                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 text-sm text-cyan-800 space-y-1">
+                      <p className="font-semibold mb-2 text-cyan-900">
+                        🐋 Whale Snorkeling Pricing
+                      </p>
+                      <p>
+                        • Solo (1 person) — <strong>$300</strong>
+                      </p>
+                      <p>
+                        • Group (2+ persons) — <strong>$150/person</strong>
+                      </p>
                     </div>
                   )}
 
@@ -404,18 +576,36 @@ export default function BookingDialog({
                         }
                         className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {timeSlots.map((slot) => (
-                          <option key={slot.value} value={slot.value}>
-                            {slot.label}
-                          </option>
-                        ))}
+                        {timeSlots.map((slot) => {
+                          const disabled = isPastTimeSlot(
+                            selectedDate,
+                            slot.value,
+                          );
+
+                          return (
+                            <option
+                              key={slot.value}
+                              value={slot.value}
+                              disabled={disabled}
+                            >
+                              {slot.label}
+                              {disabled ? " — Unavailable today" : ""}
+                            </option>
+                          );
+                        })}
                       </select>
+
+                      {selectedDate && availableTimeSlots.length === 0 && (
+                        <p className="text-sm text-red-500">
+                          No remaining time slots are available for the selected
+                          date.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Pricing */}
               {selectedTourData && (
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -441,7 +631,6 @@ export default function BookingDialog({
                 </div>
               )}
 
-              {/* User Information */}
               <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-900 mb-4">
                   Your Information

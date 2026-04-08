@@ -205,7 +205,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
           </div>
 
           <span
-            className={`text-xl md:text-2xl font-bold tracking-tight transition-all duration-300
+            className={`text-xl sm:mt-1 md:text-3xl font-bold tracking-tight transition-all duration-300
               ${scrolled ? "text-slate-900" : "text-white"} 
               bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text ${
                 !scrolled && "text-transparent bg-clip-text"
@@ -313,7 +313,7 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     </Link>
 
                     <Link
-                      href="/bookings"
+                      href="/my-bookings"
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
                     >

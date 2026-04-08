@@ -1,6 +1,8 @@
+// latest root page.tsx code. (New implementation with animations, gallery, and booking dialog)
+
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -8,14 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -23,10 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import logo from "../assets/gomirissa.png";
+
+import BookingDialog from "@/components/BookingDialog";
+import { tours, TourId } from "@/lib/booking";
 
 // --- Icons (same as before) ---
 const AnchorIcon = ({
@@ -141,85 +138,6 @@ const CheckIcon = () => (
   </svg>
 );
 
-const WaveIcon = () => (
-  <svg
-    className="w-6 h-6"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="M2 12c.8-.9 1.8-1.5 3-1.5s2.2.6 3 1.5c.8.9 1.8 1.5 3 1.5s2.2-.6 3-1.5c.8-.9 1.8-1.5 3-1.5s2.2.6 3 1.5" />
-    <path d="M2 17c.8-.9 1.8-1.5 3-1.5s2.2.6 3 1.5c.8.9 1.8 1.5 3 1.5s2.2-.6 3-1.5c.8-.9 1.8-1.5 3-1.5s2.2.6 3 1.5" />
-  </svg>
-);
-
-// --- Data (same as before) ---
-const tours = [
-  {
-    id: "deep-sea-fishing",
-    title: "Deep Sea Fishing",
-    description:
-      "Choose your style: troll the open blue for tuna and sailfish, or drop down jigging for GT, kingfish, and grouper. Jigging is our top recommendation — action-packed from the moment you hit the spot.",
-    price: 100,
-    duration: "4–6 hours",
-    maxGuests: 7,
-    image: "/images/bigfish.jpeg",
-    features: [
-      "Trolling (2 rods): tuna, sailfish, mahi-mahi",
-      "Jigging (many rods): GT, kingfish, grouper ⭐",
-      "Jigging recommended — best action!",
-      "Experienced local crew",
-      "Safety briefing & life jackets",
-      "Fresh catch cooking available",
-    ],
-    badge: "Adventure Pick",
-    badgeColor: "bg-amber-500 text-white",
-  },
-  {
-    id: "snorkeling",
-    title: "Snorkeling with Turtles",
-    description:
-      "Discover vibrant coral reefs, colorful tropical fish, and swim alongside sea turtles in the clear waters near Mirissa.",
-    price: 20,
-    duration: "3 hours",
-    maxGuests: 12,
-    image:
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop",
-    features: [
-      "All equipment provided",
-      "Professional instructor",
-      "Visit turtle hotspots",
-      "Fruits & refreshments",
-      "Shallow & safe areas",
-      "Eco-friendly practices",
-    ],
-    badge: "Most Popular",
-    badgeColor: "bg-blue-600 text-white",
-  },
-  {
-    id: "snorkeling-whales",
-    title: "Snorkeling with Whales",
-    description:
-      "A rare opportunity to snorkel near gentle giants. A responsible wildlife experience strictly adhering to safety guidelines.",
-    price: 150,
-    duration: "4–5 hours",
-    maxGuests: 8,
-    image:
-      "https://cdn.sanity.io/images/esqfj3od/production/3bf47706fcbf56cf473827e4f2fcdbe0383d8242-1080x720.webp?w=800&q=65&fit=clip&auto=format",
-    features: [
-      "Responsible approach",
-      "High-quality gear",
-      "Expert marine guide",
-      "Weather dependent",
-      "Photos included",
-      "Seasonal (Dec–Apr)",
-    ],
-    badge: "Unique Experience",
-    badgeColor: "bg-cyan-500 text-white",
-  },
-];
-
 const testimonials = [
   {
     name: "Sarah Davies",
@@ -318,55 +236,6 @@ const cardVariants: Variants = {
   },
 };
 
-// --- Price Calculation Helper (same as before) ---
-type SnorkelCameraOption = "without_camera" | "with_camera" | "camera_only";
-type FishingMethod = "trolling" | "jigging";
-
-function calculatePrice(
-  tourId: string,
-  guestCount: number,
-  snorkelCamera: SnorkelCameraOption,
-): { total: number; breakdown: string } {
-  if (tourId === "deep-sea-fishing") {
-    if (guestCount === 1) {
-      return { total: 250, breakdown: "1 person — $250 flat rate" };
-    } else if (guestCount === 2) {
-      return { total: 250, breakdown: "2 persons × $125/person" };
-    } else {
-      return {
-        total: guestCount * 100,
-        breakdown: `${guestCount} persons × $100/person`,
-      };
-    }
-  }
-
-  if (tourId === "snorkeling") {
-    if (snorkelCamera === "camera_only") {
-      return { total: 20, breakdown: "Camera rental only — $20 flat" };
-    }
-    const rate = snorkelCamera === "with_camera" ? 35 : 20;
-    const label =
-      snorkelCamera === "with_camera" ? "with free camera" : "without camera";
-    return {
-      total: guestCount * rate,
-      breakdown: `${guestCount} person${guestCount > 1 ? "s" : ""} × $${rate}/person (${label})`,
-    };
-  }
-
-  if (tourId === "snorkeling-whales") {
-    if (guestCount === 1) {
-      return { total: 300, breakdown: "1 person — $300 solo rate" };
-    } else {
-      return {
-        total: guestCount * 150,
-        breakdown: `${guestCount} persons × $150/person (group rate)`,
-      };
-    }
-  }
-
-  return { total: 0, breakdown: "" };
-}
-
 // ScrollToSection component for smooth scrolling
 const ScrollToSection = ({
   href,
@@ -391,24 +260,13 @@ const ScrollToSection = ({
 };
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTour, setSelectedTour] = useState<string>("");
-  const [guestCount, setGuestCount] = useState<number>(1);
-  const [snorkelCamera, setSnorkelCamera] =
-    useState<SnorkelCameraOption>("without_camera");
-  const [fishingMethod, setFishingMethod] = useState<FishingMethod>("jigging");
-  const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isGalleryExpanded, setIsGalleryExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const initialGalleryCount = 5;
 
-  const selectedTourData = tours.find((t) => t.id === selectedTour);
-  const { total: totalPrice, breakdown: priceBreakdown } = calculatePrice(
-    selectedTour,
-    guestCount,
-    snorkelCamera,
-  );
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedTourId, setSelectedTourId] = useState<TourId | "">("");
 
   // Simulate initial loading
   useEffect(() => {
@@ -416,11 +274,8 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleBookNow = (tourId: string) => {
-    setSelectedTour(tourId);
-    setGuestCount(1);
-    setSnorkelCamera("without_camera");
-    setFishingMethod("jigging");
+  const handleBookNow = (tourId: TourId) => {
+    setSelectedTourId(tourId);
     setBookingOpen(true);
   };
 
@@ -661,7 +516,7 @@ export default function Home() {
                       </div>
                     </CardContent>
 
-                    <CardFooter className="p-6 pt-0 mt-auto flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
+                    <CardFooter className="p-6 pt-5 mt-auto flex items-center justify-between border-t border-slate-100 bg-slate-50/50">
                       <div className="flex flex-col">
                         <span className="text-sm text-slate-500">
                           Starting from
@@ -1478,330 +1333,12 @@ export default function Home() {
           </div>
         </footer>
 
-        {/* --- Booking Dialog (same as before) --- */}
-        <Dialog open={bookingOpen} onOpenChange={setBookingOpen}>
-          <DialogContent className="max-w-2xl bg-white p-0 overflow-hidden gap-0 rounded-2xl">
-            <div className="bg-slate-900 p-6 text-white">
-              <DialogHeader>
-                <DialogTitle className="text-2xl">
-                  Book Your Adventure
-                </DialogTitle>
-                <DialogDescription className="text-slate-400">
-                  Secure your spot on the boat. No payment required today.
-                </DialogDescription>
-              </DialogHeader>
-            </div>
-
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
-              <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="details">Tour Options</TabsTrigger>
-                  <TabsTrigger value="calendar">Select Date</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="details" className="space-y-5">
-                  {/* Same content as before */}
-                  <div className="space-y-2">
-                    <Label>Select Experience</Label>
-                    <Select
-                      value={selectedTour}
-                      onValueChange={(val) => {
-                        setSelectedTour(val);
-                        setGuestCount(1);
-                        setSnorkelCamera("without_camera");
-                        setFishingMethod("jigging");
-                      }}
-                    >
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Choose your adventure" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="deep-sea-fishing">
-                          Deep Sea Fishing
-                        </SelectItem>
-                        <SelectItem value="snorkeling">
-                          Snorkeling with Turtles
-                        </SelectItem>
-                        <SelectItem value="snorkeling-whales">
-                          Snorkeling with Whales
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {selectedTour === "deep-sea-fishing" && (
-                    <div className="space-y-2">
-                      <Label>Fishing Method</Label>
-                      <Select
-                        value={fishingMethod}
-                        onValueChange={(val: string) =>
-                          setFishingMethod(val as FishingMethod)
-                        }
-                      >
-                        <SelectTrigger className="h-11">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="jigging">
-                            ⭐ Jigging (Recommended) — GT, Kingfish, Grouper
-                          </SelectItem>
-                          <SelectItem value="trolling">
-                            Trolling — Tuna, Sailfish, Jackfish, Kingfish
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  {selectedTour === "deep-sea-fishing" && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-black-800 space-y-1">
-                      <p className="font-semibold mb-2 text-amber-900">
-                        🎣 Fishing Tour Pricing (max 7 guests)
-                      </p>
-                      <p>
-                        • 1 person — <strong>$250</strong> flat rate
-                      </p>
-                      <p>
-                        • 2 persons — <strong>$125/person</strong> ($250 total)
-                      </p>
-                      <p>
-                        • 3–7 persons — <strong>$100/person</strong>
-                      </p>
-                      <div className="mt-3 pt-3 border-t border-blue-200 space-y-1">
-                        <p className="font-semibold text-amber-900">
-                          🐟 Fishing Methods
-                        </p>
-                        {fishingMethod === "jigging" ? (
-                          <div className="bg-blue-100 rounded-lg p-2 mt-1">
-                            <p className="font-semibold text-amber-900">
-                              ⭐ Jigging (Recommended)
-                            </p>
-                            <p className="mt-1">
-                              Multiple rods around the boat — best action!
-                            </p>
-                            <p className="mt-0.5">
-                              Catches:{" "}
-                              <strong>
-                                Giant Trevally (GT), Kingfish, Grouper
-                              </strong>
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="bg-amber-100 rounded-lg p-2 mt-1">
-                            <p className="font-semibold text-amber-900">
-                              Trolling
-                            </p>
-                            <p className="mt-1">
-                              2 rods trolling the open water
-                            </p>
-                            <p className="mt-0.5">
-                              Catches:{" "}
-                              <strong>
-                                Tuna, Jackfish, Kingfish, Sailfish etc...
-                              </strong>
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedTour === "snorkeling" && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800 space-y-1">
-                      <p className="font-semibold mb-2 text-blue-900">
-                        🐢 Snorkeling with Turtles Pricing
-                      </p>
-                      <p>
-                        • Without camera — <strong>$20/person</strong>
-                      </p>
-                      <p>
-                        • With free camera — <strong>$35/person</strong>
-                      </p>
-                      <p>
-                        • Camera rental only — <strong>$20</strong> flat
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedTour === "snorkeling-whales" && (
-                    <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 text-sm text-cyan-800 space-y-1">
-                      <p className="font-semibold mb-2 text-cyan-900">
-                        🐋 Whale Snorkeling Pricing
-                      </p>
-                      <p>
-                        • Solo (1 person) — <strong>$300</strong>
-                      </p>
-                      <p>
-                        • Group (2+ persons) — <strong>$150/person</strong>
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedTour === "snorkeling" && (
-                    <div className="space-y-2">
-                      <Label>Camera Option</Label>
-                      <Select
-                        value={snorkelCamera}
-                        onValueChange={(val: string) => {
-                          const v = val as SnorkelCameraOption;
-                          setSnorkelCamera(v);
-                          if (v === "camera_only") setGuestCount(1);
-                        }}
-                      >
-                        <SelectTrigger className="h-11">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="without_camera">
-                            Without Camera — $20/person
-                          </SelectItem>
-                          <SelectItem value="with_camera">
-                            With Free Camera — $35/person
-                          </SelectItem>
-                          <SelectItem value="camera_only">
-                            Camera Rental Only — $20 flat
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Guests</Label>
-                      <Select
-                        value={String(guestCount)}
-                        onValueChange={(val) => setGuestCount(parseInt(val))}
-                        disabled={
-                          selectedTour === "snorkeling" &&
-                          snorkelCamera === "camera_only"
-                        }
-                      >
-                        <SelectTrigger className="h-11">
-                          <SelectValue placeholder="Select guests" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {[
-                            ...Array(
-                              selectedTour === "deep-sea-fishing" ? 7 : 10,
-                            ),
-                          ].map((_, i) => (
-                            <SelectItem key={i} value={String(i + 1)}>
-                              {i + 1} {i === 0 ? "Guest" : "Guests"}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Time Slot</Label>
-                      <Select>
-                        <SelectTrigger className="h-11">
-                          <SelectValue placeholder="Morning (6:00 AM)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="morning">
-                            Morning (6:00 AM)
-                          </SelectItem>
-                          <SelectItem value="midday">
-                            Midday (11:00 AM)
-                          </SelectItem>
-                          <SelectItem value="afternoon">
-                            Afternoon (2:00 PM)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {selectedTourData && (
-                    <div className="bg-slate-100 p-4 rounded-xl border border-slate-200">
-                      <div className="flex justify-between items-center text-sm text-slate-600 mb-2">
-                        <span>{priceBreakdown}</span>
-                      </div>
-                      <div className="flex justify-between items-center border-t border-slate-300 pt-3">
-                        <span className="font-semibold text-slate-800 text-sm">
-                          Total Price
-                        </span>
-                        <span className="font-bold text-slate-900 text-2xl">
-                          ${totalPrice}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-4 pt-4 border-t">
-                    <div className="space-y-2">
-                      <Label>Full Name</Label>
-                      <Input placeholder="Enter your name" className="h-11" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Email</Label>
-                        <Input
-                          type="email"
-                          placeholder="Email address"
-                          className="h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Phone / WhatsApp</Label>
-                        <Input
-                          type="tel"
-                          placeholder="Phone number"
-                          className="h-11"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="calendar">
-                  <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      className="rounded-md"
-                      disabled={(date) => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                      }}
-                    />
-                    {selectedDate && (
-                      <div className="mt-4 text-center bg-blue-100 text-blue-800 px-4 py-2 rounded-lg text-sm font-medium w-full">
-                        Selected:{" "}
-                        {selectedDate.toLocaleDateString(undefined, {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-
-            <div className="p-6 bg-slate-50 border-t flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setBookingOpen(false)}
-                className="flex-1 h-12"
-              >
-                Cancel
-              </Button>
-              <Button className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 text-white flex justify-between px-6">
-                <span>Confirm Request</span>
-                <span className="bg-blue-800/30 px-2 py-1 rounded text-sm font-mono">
-                  {totalPrice > 0 ? `$${totalPrice}` : "—"}
-                </span>
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        {/* --- Booking Dialog --- */}
+        <BookingDialog
+          open={bookingOpen}
+          onOpenChange={setBookingOpen}
+          initialTourId={selectedTourId}
+        />
 
         {/* --- Image Lightbox --- */}
         <Dialog

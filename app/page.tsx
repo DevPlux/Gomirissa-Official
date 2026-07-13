@@ -1,7 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  Variants,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+
+import Fish from "@/assets/fish5.png";
+import AboutBG from "@/assets/fish6.png";
+import MuthuBG from "@/assets/underwater.svg";
+import TestoBG from "@/assets/fish8.png";
+import GalleryBG from "@/assets/galley.png";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -298,34 +311,19 @@ export default function Home() {
     if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Loading screen
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-white text-lg font-medium"
-          >
-            Loading Mirissa Adventures...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+  const toursSectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: toursScroll } = useScroll({
+    target: toursSectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const toursBgY = useTransform(toursScroll, [0, 1], ["-8%", "8%"]);
+  const toursBgScale = useTransform(toursScroll, [0, 1], [1.15, 1.3]);
+  const toursBgOpacity = useTransform(
+    toursScroll,
+    [0, 0.3, 0.7, 1],
+    [0.15, 0.35, 0.35, 0.15],
+  );
 
   return (
     <AnimatePresence mode="wait">
@@ -348,7 +346,7 @@ export default function Home() {
               playsInline
               className="absolute inset-0 w-full h-full object-cover scale-105"
             >
-              <source src="/videos/fish.mp4" type="video/mp4" />
+              <source src="/videos/deep_Sea.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-slate-900/90" />
           </div>
@@ -454,9 +452,32 @@ export default function Home() {
         </section>
 
         {/* --- Tours Section --- */}
-        <section id="tours" className="py-24 bg-slate-50 relative">
-          <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-900/5 to-transparent pointer-events-none" />
-          <div className="max-w-7xl mx-auto px-6">
+        <section
+          id="tours"
+          ref={toursSectionRef}
+          className="py-24 bg-slate-50 relative overflow-hidden"
+        >
+          {/* Animated parallax background image */}
+          <motion.div
+            className="absolute inset-0 z-10 pointer-events-none"
+            style={{
+              y: toursBgY,
+              scale: toursBgScale,
+              opacity: toursBgOpacity,
+            }}
+          >
+            <Image
+              src={Fish}
+              alt=""
+              fill
+              className="object-cover"
+              priority={false}
+            />
+          </motion.div>
+
+          <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-900/5 to-transparent pointer-events-none z-0" />
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -570,9 +591,35 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Gallery Section --- */}
-        <section id="gallery" className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+        {/* --- Gallery Section with Background Images --- */}
+        <section
+          id="gallery"
+          className="py-24 bg-white relative overflow-hidden"
+        >
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image – hidden on mobile */}
+            <Image
+              src={GalleryBG}
+              alt="Gallery background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image – hidden on desktop */}
+            <Image
+              src={GalleryBG}
+              alt="Gallery background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+
+            {/* Subtle gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/90" />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -672,8 +719,22 @@ export default function Home() {
           id="about"
           className="py-16 lg:py-24 bg-slate-50 relative overflow-hidden"
         >
-          <div className="absolute top-0 left-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+          {/* Background Image with Next.js Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={MuthuBG}
+              alt="Ocean background"
+              fill
+              className="object-cover"
+              priority={false}
+            />
+            {/* Semi-transparent overlay to keep text readable */}
+            <div className="absolute inset-0 bg-slate-50/90" />
+          </div>
+
+          {/* Decorative blur circles - now with z-1 to stay above background */}
+          <div className="absolute top-0 left-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2 z-1" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2 z-1" />
 
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -684,7 +745,7 @@ export default function Home() {
                 variants={fadeInLeft}
                 className="order-1"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide mb-6">
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-base md:text-lg font-bold tracking-wider uppercase shadow-lg shadow-blue-200/50 mb-8">
                   Established 2010
                 </div>
                 <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
@@ -723,7 +784,7 @@ export default function Home() {
                     </span>
                     A Note from Sandun
                   </h4>
-                  <p className="italic text-slate-600 text-sm md:text-base">
+                  <p className="italic text-slate-600 text-sm md:text-base font-semibold">
                     &#34;I handle every tour coordination myself. No agents, no
                     middlemen. When you book with Muthu Tours, you are booking
                     directly with me and my local crew. Watch out for
@@ -793,30 +854,71 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Testimonials Section --- */}
+        {/* --- Testimonials Section with Background Images --- */}
         <section
           id="testimonials"
-          className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white"
+          className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image – hidden on mobile */}
+            <Image
+              src={TestoBG}
+              alt="Testimonials background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image – hidden on desktop */}
+            <Image
+              src={TestoBG}
+              alt="Testimonials background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+            {/* Overlay to keep text readable (darkens the image) */}
+            <div className="absolute inset-0 bg-slate-900/70" />
+            {/* Additional gradient overlay for smooth blending */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/70 to-slate-800/80" />
+          </div>
+
+          {/* Subtle decorative elements (now above the image) */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl z-1" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl z-1" />
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4"
+              className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6"
             >
               <div>
-                <Badge className="bg-blue-500/20 text-blue-200 hover:bg-blue-500/30 mb-4 border-0">
-                  Traveler Reviews
+                <Badge className="bg-blue-500/20 text-blue-200 hover:bg-blue-500/30 mb-4 border-0 px-4 py-2 text-sm backdrop-blur-sm">
+                  ⭐ Traveler Reviews
                 </Badge>
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  Stories from the Sea
+                <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+                  Stories from the{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-200">
+                    Sea
+                  </span>
                 </h2>
+                <p className="text-slate-400 mt-3 text-lg max-w-2xl">
+                  Real experiences from adventurers who sailed with us.
+                </p>
               </div>
-              <div className="flex items-center gap-2 text-yellow-400 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                <StarIcon /> <span className="font-bold text-white">5.0</span>{" "}
-                <span className="text-white/60 text-sm">Average Rating</span>
+              <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-full backdrop-blur-md border border-white/10 shadow-lg flex-shrink-0">
+                <span className="text-2xl font-bold text-yellow-400">5.0</span>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon key={i} />
+                  ))}
+                </div>
+                <span className="text-xs text-slate-400 font-medium ml-1">
+                  (200+ reviews)
+                </span>
               </div>
             </motion.div>
 
@@ -825,31 +927,58 @@ export default function Home() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
             >
               {testimonials.map((t, idx) => (
                 <motion.div
                   key={idx}
                   variants={cardVariants}
-                  whileHover="hover"
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  className="group relative"
                 >
-                  <Card className="bg-white/5 border-white/10 backdrop-blur-sm text-slate-100 hover:bg-white/10 transition-colors duration-300">
-                    <CardContent className="pt-6">
+                  {/* Glow effect on hover */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <Card className="relative bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    {/* Decorative quote icon */}
+                    <div className="absolute top-2 right-3 text-8xl rotate-3 text-white/5 font-serif select-none">
+                      &#8220;
+                    </div>
+
+                    <CardContent className="pt-8 px-6 pb-6">
+                      {/* Rating with larger stars */}
                       <div className="flex gap-1 text-yellow-400 mb-4">
                         {[...Array(t.rating)].map((_, i) => (
                           <StarIcon key={i} />
                         ))}
                       </div>
-                      <p className="text-slate-300 text-sm leading-relaxed mb-6 min-h-[80px]">
+
+                      {/* Testimonial text */}
+                      <p className="text-slate-200 text-sm leading-relaxed mb-6 min-h-[80px] relative z-10 italic">
                         &#34;{t.text}&#34;
                       </p>
-                      <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-white text-sm shadow-lg">
+
+                      {/* Divider */}
+                      <div className="h-px w-full bg-gradient-to-r from-white/10 via-white/20 to-transparent mb-4" />
+
+                      {/* Author section */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-white text-xl shadow-lg ring-2 ring-white/20 flex-shrink-0">
                           {t.avatar}
                         </div>
-                        <div>
-                          <p className="font-semibold text-sm">{t.name}</p>
-                          <p className="text-xs text-slate-400">{t.location}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-white text-lg truncate leading-tight">
+                            {t.name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs text-slate-400 truncate">
+                              {t.location}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0" />
+                            <span className="text-[10px] text-emerald-400 font-medium flex-shrink-0">
+                              ✓
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -1230,12 +1359,36 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Footer (same as before, keep the ScrollToSection usage) --- */}
-        <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-900">
-          <div className="max-w-7xl mx-auto px-6">
+        {/* --- Footer with Background Images (Fixed) --- */}
+        <footer className="relative text-slate-400 py-16 border-t border-slate-800 overflow-hidden bg-slate-900">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image */}
+            <Image
+              src={AboutBG}
+              alt="Footer background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image */}
+            <Image
+              src={AboutBG}
+              alt="Footer background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+            {/* Lighter overlay to let the image show through */}
+            <div className="absolute inset-0 bg-slate-900/70" />
+            {/* Subtle gradient for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+          </div>
+
+          {/* Content */}
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               <div className="space-y-4">
-                {/* Logo + Brand Name */}
                 <div className="flex items-center gap-3 text-white">
                   <div className="relative w-14 h-14 flex-shrink-0">
                     <Image
@@ -1246,12 +1399,11 @@ export default function Home() {
                       priority
                     />
                   </div>
-
                   <span className="text-xl font-bold tracking-wide">
                     GoMirissa
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed">
+                <p className="text-sm leading-relaxed text-slate-300">
                   Creating unforgettable ocean memories in Sri Lanka since 2010.
                   Authentic, safe, and locally guided.
                 </p>
@@ -1261,28 +1413,28 @@ export default function Home() {
                 <ul className="space-y-3 text-sm">
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Snorkeling with Turtles
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Snorkeling with Whales
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Deep Sea Fishing
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Private Boat Hire
                       </span>
                     </ScrollToSection>
@@ -1294,28 +1446,28 @@ export default function Home() {
                 <ul className="space-y-3 text-sm">
                   <li>
                     <ScrollToSection href="#about">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         About Us
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#gallery">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Gallery
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#testimonials">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Reviews
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#contact">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Contact
                       </span>
                     </ScrollToSection>
@@ -1328,7 +1480,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Privacy Policy
                     </a>
@@ -1336,7 +1488,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Terms of Service
                     </a>
@@ -1344,7 +1496,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Cancellation Policy
                     </a>
@@ -1352,7 +1504,7 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-            <div className="pt-8 border-t border-slate-900 text-center text-xs">
+            <div className="pt-8 border-t border-white/10 text-center text-xs text-slate-400">
               <p>
                 &copy; {new Date().getFullYear()} Muthu Tours Mirissa. All
                 rights reserved.

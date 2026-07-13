@@ -1,5 +1,3 @@
-// latest root page.tsx code. (New implementation with animations, gallery, and booking dialog)
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -20,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import logo from "../assets/gomirissa.png";
+import logo from "@/assets/gomirissa.png";
 
 import BookingDialog from "@/components/BookingDialog";
 import { tours, TourId, getTourPricingMeta } from "@/lib/booking";

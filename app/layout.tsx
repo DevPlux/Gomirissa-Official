@@ -15,6 +15,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "GoMirissa",
   description: "Fishing Tours in Mirissa, Sri Lanka",
+  alternates: {
+    canonical: "https://www.gomirissa.com",
+  },
 };
 
 export default function RootLayout({

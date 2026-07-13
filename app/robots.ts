@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://www.gomirissa.com/sitemap.xml",
+    sitemap: "https://gomirissa.com/sitemap.xml",
   };
 }

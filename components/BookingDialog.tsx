@@ -29,6 +29,10 @@ import {
   tours,
 } from "@/lib/booking";
 import { createBooking } from "@/firebase/booking";
+import {
+  buildBookingWhatsAppMessage,
+  generateWhatsAppUrl,
+} from "@/lib/whatsapp";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -300,7 +304,7 @@ export default function BookingDialog({
     try {
       setSubmitting(true);
 
-      await createBooking({
+      const bookingPayload = {
         userId: user.uid,
         userEmail: user.email,
         userName: fullName.trim(),
@@ -317,18 +321,28 @@ export default function BookingDialog({
         snorkelCamera:
           selectedTourData.id === "snorkeling" ? snorkelCamera : null,
         specialNotes: specialNotes.trim(),
-        status: "pending",
-        paymentStatus: "unpaid",
-      });
+        status: "pending" as const,
+        paymentStatus: "unpaid" as const,
+      };
+
+      const docRef = await createBooking(bookingPayload);
+
+      // WhatsApp Integration
+      const adminPhone = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_NUMBER || "94712588996";
+      const waMessage = buildBookingWhatsAppMessage(bookingPayload, docRef.id);
+      const waUrl = generateWhatsAppUrl(adminPhone, waMessage);
+
+      // Open WhatsApp in new tab
+      window.open(waUrl, "_blank");
 
       onOpenChange(false);
 
       await Swal.fire({
         icon: "success",
         title: "Booking request sent",
-        text: "Your booking request has been saved successfully.",
+        text: "Your booking request has been saved successfully. Please send the WhatsApp message to confirm.",
         showConfirmButton: false,
-        timer: 1600,
+        timer: 2000,
         timerProgressBar: true,
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -339,7 +353,9 @@ export default function BookingDialog({
         },
       });
 
-      router.push("/my-bookings");
+      setTimeout(() => {
+        router.push("/my-bookings");
+      }, 500);
     } catch (error) {
       console.error("Booking creation failed:", error);
 
@@ -357,9 +373,9 @@ export default function BookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         ref={dialogContentRef}
-        className={`max-w-3xl bg-white p-0 overflow-hidden gap-0 sm:rounded-[1.5rem] border-0 shadow-2xl ${inter.className}`}
+        className={`max-w-3xl flex flex-col max-h-[100dvh] sm:max-h-[90vh] bg-white p-0 overflow-hidden gap-0 sm:rounded-[1.5rem] border-0 shadow-2xl ${inter.className}`}
       >
-        <div className="bg-gradient-to-br from-slate-950 via-slate-800 to-blue-700 px-6 py-6 text-white">
+        <div className="shrink-0 bg-gradient-to-br from-slate-950 via-slate-800 to-blue-700 px-6 py-6 text-white">
           <DialogHeader>
             <DialogTitle className="text-2xl md:text-3xl font-bold">
               Book Your Adventure
@@ -370,27 +386,25 @@ export default function BookingDialog({
           </DialogHeader>
         </div>
 
-        <div className="p-5 md:p-6 max-h-[78vh] overflow-y-auto bg-slate-50">
+        <div className="flex-1 p-5 md:p-6 overflow-y-auto bg-slate-50">
           <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-200/80 p-1 mb-6">
             <button
               type="button"
               onClick={() => setActiveStep("details")}
-              className={`h-11 rounded-xl text-sm font-semibold transition-all ${
-                activeStep === "details"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
+              className={`h-11 rounded-xl text-sm font-semibold transition-all ${activeStep === "details"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+                }`}
             >
               Tour Options
             </button>
             <button
               type="button"
               onClick={() => setActiveStep("date")}
-              className={`h-11 rounded-xl text-sm font-semibold transition-all ${
-                activeStep === "date"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
+              className={`h-11 rounded-xl text-sm font-semibold transition-all ${activeStep === "date"
+                ? "bg-white text-blue-600 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+                }`}
             >
               Select Date
             </button>
@@ -756,9 +770,9 @@ export default function BookingDialog({
                       Booking Note
                     </p>
                     <p className="text-sm text-amber-800 leading-relaxed">
-                      Your booking will be submitted as a request first. We can
-                      confirm final availability after reviewing your selected
-                      date and package.
+                      Your booking will be submitted as a request first.
+                      We’ll review your selected date and package to confirm final availability.
+                      After submitting, WhatsApp will open with your booking details — just tap Send and we’ll handle the rest.
                     </p>
                   </div>
                 </div>
@@ -767,11 +781,11 @@ export default function BookingDialog({
           )}
         </div>
 
-        <div className="border-t border-slate-200 bg-white px-5 py-4 md:px-6 flex flex-col sm:flex-row gap-3">
+        <div className="shrink-0 border-t border-slate-200 bg-white px-5 py-4 md:px-6 flex flex-col sm:flex-row gap-3">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="h-12 flex-1 rounded-2xl"
+            className="h-12 flex-1 rounded-2xl mb-2"
             disabled={submitting}
           >
             Cancel
@@ -780,22 +794,27 @@ export default function BookingDialog({
           {activeStep === "details" ? (
             <Button
               onClick={() => setActiveStep("date")}
-              className="h-12 flex-1 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white"
+              className="h-12 flex-1 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white mb-6"
               disabled={!selectedTour}
             >
               Continue to Date
             </Button>
           ) : (
-            <Button
-              onClick={handleSubmitBooking}
-              className="h-12 flex-1 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-between px-5"
-              disabled={submitting}
-            >
-              <span>{submitting ? "Saving..." : "Confirm Request"}</span>
-              <span className="rounded-lg bg-blue-800/30 px-2.5 py-1 text-sm font-mono">
-                {totalPrice > 0 ? `$${totalPrice}` : "—"}
-              </span>
-            </Button>
+            <div className="flex-1 flex flex-col gap-1">
+              <Button
+                onClick={handleSubmitBooking}
+                className="h-12 w-full rounded-2xl bg-green-500 hover:bg-green-600 text-white flex items-center justify-between px-5"
+                disabled={submitting}
+              >
+                <span>{submitting ? "Saving..." : "Submit & Connect via WhatsApp"}</span>
+                <span className="rounded-lg bg-blue-800/30 px-2.5 py-1 text-sm font-mono">
+                  {totalPrice > 0 ? `$${totalPrice}` : "—"}
+                </span>
+              </Button>
+              <p className="text-xs text-center text-slate-500 font-medium px-2">
+                After submitting, please click SEND in the opened WhatsApp chat to notify us.
+              </p>
+            </div>
           )}
         </div>
       </DialogContent>

@@ -13,7 +13,7 @@ export function buildBookingWhatsAppMessage(
   });
 
   // ─── Header ───
-  let message = `🌊 *NEW BOOKING REQUEST* 🌊\n`;
+  let message = `🌊 *NEW BOOKING REQUEST* 🌊\n\n`;
 
   // ─── Booking ID ───
   message += `🆔 *Booking ID:* \`${bookingId}\`\n\n`;

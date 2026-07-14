@@ -13,13 +13,15 @@ export function buildBookingWhatsAppMessage(
   });
 
   // ─── Header ───
-  let message = `🌊 *NEW BOOKING REQUEST* 🌊\n\n`;
+  let message = `🌊 *GoMirissa Official* 🌊\n`;
+  message += "*NEW TOUR BOOKING REQUEST*\n\n";
 
   // ─── Booking ID ───
-  message += `🆔 *Booking ID:* \`${bookingId}\`\n\n`;
+  message += "🆔 *Booking Information*\n";
+  message += `*Booking ID:* \`${bookingId}\`\n\n`;
 
   // ─── Customer Details ───
-  message += `👤 *Customer Details*\n`;
+  message += `👤 *Guest Details*\n`;
   message += `───────────────────\n`;
   message += `*Name:* ${bookingData.userName}\n`;
   message += `*Phone:* ${bookingData.userPhone}\n`;
@@ -34,8 +36,11 @@ export function buildBookingWhatsAppMessage(
   message += `*Tour:* ${bookingData.tourTitle}\n`;
   message += `*Date:* ${formattedDate}\n`;
   message += `*Time Slot:* ${bookingData.timeSlot}\n`;
-  message += `*Guests:* ${bookingData.guestCount} ${bookingData.guestCount > 1 ? "people" : "person"}\n`;
-  message += `*Total Price:* $${bookingData.totalPrice}\n`;
+  message += `*Guests:* ${bookingData.guestCount} ${bookingData.guestCount > 1 ? "people" : "person"}\n\n`;
+
+  message += "💰 *Payment Summary*\n";
+  message += "━━━━━━━━━━━━━━━━━━━━━━\n";
+  message += `• Total Amount : *USD $${bookingData.totalPrice}*\n`;
 
   // ─── Optional Extras ───
   const extras: string[] = [];
@@ -57,9 +62,12 @@ export function buildBookingWhatsAppMessage(
   }
 
   // ─── Footer ───
-  message += `\n━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `✅ *Please confirm availability for this booking.*\n`;
-  message += `📌 Reply to this message to accept or ask questions.`;
+  message += "━━━━━━━━━━━━━━━━━━━━━━\n";
+  message +=
+    "Please review this booking and contact the guest to confirm availability.\n\n";
+  message += "🌐 www.gomirissa.com\n";
+  message += "📍 Mirissa, Sri Lanka 🇱🇰\n\n";
+  message += "Thank you for using *GoMirissa Booking System*";
 
   return message;
 }

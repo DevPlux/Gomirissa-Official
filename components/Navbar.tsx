@@ -332,17 +332,6 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     {!isAdmin && (
                       <>
                         <Link
-                          href="/profile"
-                          onClick={() => setProfileOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                        >
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                            <UserIcon />
-                          </div>
-                          <span className="font-medium">My Profile</span>
-                        </Link>
-
-                        <Link
                           href="/my-bookings"
                           onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
@@ -512,14 +501,6 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">
                       Quick Actions
                     </p>
-                    <Link
-                      href="/profile"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
-                    >
-                      <UserIcon />
-                      <span>My Profile</span>
-                    </Link>
                     <Link
                       href="/my-bookings"
                       onClick={() => setMobileMenuOpen(false)}

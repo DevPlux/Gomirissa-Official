@@ -9,11 +9,14 @@ import {
   useTransform,
 } from "framer-motion";
 
-import Fish from "@/assets/fish5.png";
-import AboutBG from "@/assets/fish6.png";
-import MuthuBG from "@/assets/underwater.svg";
-import TestoBG from "@/assets/fish8.png";
+import PackagesBG from "@/assets/fish5.png";
 import GalleryBG from "@/assets/galley.png";
+import GalleryMobileBG from "@/assets/galleryMobileBGsvg.svg";
+import AboutBG from "@/assets/fish6.png";
+import TestoBG from "@/assets/fish8.png";
+import MuthuBG from "@/assets/underwater.svg";
+import MuthuMobileBG from "@/assets/MuthuMobileBG.svg";
+import ContactMobileBG from "@/assets/ContactMobileBG.svg";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -325,6 +328,20 @@ export default function Home() {
     [0.15, 0.35, 0.35, 0.15],
   );
 
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
+      setIsMusicPlaying(!isMusicPlaying);
+    }
+  };
+
   return (
     <AnimatePresence mode="wait">
       <motion.main
@@ -336,7 +353,7 @@ export default function Home() {
         {/* --- Navigation --- */}
         <Navbar onBookNow={() => setBookingOpen(true)} />
 
-        {/* --- Hero Section --- */}
+        {/* --- Hero Section with Background Music --- */}
         <section className="relative h-screen flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <video
@@ -350,6 +367,48 @@ export default function Home() {
             </video>
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-slate-900/90" />
           </div>
+
+          {/* Background Audio */}
+          <audio ref={audioRef} src="/audio/bg-music.mp3" loop preload="auto" />
+
+          {/* Music Control Button - positioned absolutely within Hero section */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+            onClick={toggleMusic}
+            className="absolute bottom-6 right-4 md:bottom-8 md:right-8 z-30 bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all shadow-lg"
+            aria-label="Toggle background music"
+          >
+            {isMusicPlaying ? (
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+                  opacity="0.5"
+                />
+                <line
+                  x1="4.5"
+                  y1="4.5"
+                  x2="19.5"
+                  y2="19.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+            )}
+          </motion.button>
 
           <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
             <motion.div
@@ -467,7 +526,7 @@ export default function Home() {
             }}
           >
             <Image
-              src={Fish}
+              src={PackagesBG}
               alt=""
               fill
               className="object-cover"
@@ -608,7 +667,7 @@ export default function Home() {
             />
             {/* Mobile image – hidden on desktop */}
             <Image
-              src={GalleryBG}
+              src={GalleryMobileBG}
               alt="Gallery background mobile"
               fill
               className="object-cover block md:hidden"
@@ -871,7 +930,7 @@ export default function Home() {
             />
             {/* Mobile image – hidden on desktop */}
             <Image
-              src={TestoBG}
+              src={MuthuMobileBG}
               alt="Testimonials background mobile"
               fill
               className="object-cover block md:hidden"
@@ -989,12 +1048,32 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Contact Section --- */}
+        {/* --- Contact Section with Background Images --- */}
         <section
           id="contact"
-          className="py-24 bg-gradient-to-b from-white to-slate-50"
+          className="py-24 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image – hidden on mobile */}
+            <Image
+              src={MuthuBG}
+              alt="Contact background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image – hidden on desktop */}
+            <Image
+              src={ContactMobileBG}
+              alt="Contact background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -1123,7 +1202,7 @@ export default function Home() {
               </div>
 
               {/* Right side - Form */}
-              <div className="lg:w-3/5 bg-white p-8 md:p-12">
+              <div className="lg:w-3/5 bg-white/95 backdrop-blur-sm p-8 md:p-12">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -1373,7 +1452,7 @@ export default function Home() {
             />
             {/* Mobile image */}
             <Image
-              src={AboutBG}
+              src={MuthuMobileBG}
               alt="Footer background mobile"
               fill
               className="object-cover block md:hidden"

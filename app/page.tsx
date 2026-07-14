@@ -1136,8 +1136,8 @@ export default function Home() {
                       {
                         icon: <PhoneIcon />,
                         title: "Call / WhatsApp",
-                        content: "+94 71 434 3478",
-                        link: "https://wa.me/94714343478",
+                        content: "+94 71 401 3477",
+                        link: "https://wa.me/94714013477",
                       },
                       {
                         icon: <MailIcon />,

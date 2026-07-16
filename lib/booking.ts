@@ -66,8 +66,7 @@ export const tours: Tour[] = [
     price: 20,
     duration: "3 hours",
     maxGuests: 12,
-    image:
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=600&fit=crop",
+    image: "/images/snorkeling.jpg",
     features: [
       "All equipment provided",
       "Professional instructor",

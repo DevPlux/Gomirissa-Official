@@ -206,13 +206,12 @@ const testimonials = [
 const galleryImages = [
   { src: "/images/14.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/2.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/25.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/3.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/6.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/8.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/9.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/10.jpeg", alt: "Muthu Tour destination" },
-  { src: "/images/23.jpeg", alt: "Muthu Tour destination" },
-  { src: "/images/24.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/12.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/13.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/15.jpeg", alt: "Muthu Tour destination" },
@@ -222,6 +221,16 @@ const galleryImages = [
   { src: "/images/19.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/20.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/21.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/22.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/23.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/24.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/26.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/27.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/28.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/29.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/30.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/32.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/33.jpeg", alt: "Muthu Tour destination" },
 ];
 
 // Animation variants with proper typing

@@ -203,11 +203,63 @@ const testimonials = [
   },
 ];
 
+const FacebookIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
+    <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z" />
+  </svg>
+);
+
+const WhatsAppIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#25D366">
+    <path d="M12.02 2C6.5 2 2.02 6.48 2.02 12c0 1.88.51 3.65 1.4 5.17L2 22l4.97-1.36A9.96 9.96 0 0012.02 22c5.52 0 10-4.48 10-10S17.54 2 12.02 2zm5.45 12.38c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.94-.93 1.14-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.5-.17 0-.36-.02-.56-.02-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.19 2.05 3.13 4.97 4.39.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.11.55-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.26-.19-.55-.34z" />
+  </svg>
+);
+
+const TripAdvisorIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#34E0A1"
+    strokeWidth="2"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="8.5" cy="12" r="2.4" />
+    <circle cx="15.5" cy="12" r="2.4" />
+  </svg>
+);
+
+const socialLinksFooter = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61591632323356",
+    icon: <FacebookIcon />,
+  },
+  {
+    name: "WhatsApp",
+    href: "https://wa.me/94714013477",
+    icon: <WhatsAppIcon />,
+  },
+  {
+    name: "TripAdvisor",
+    href: "https://www.tripadvisor.com/Attraction_Review-g1407334-d12732132-Reviews-Muthu_Tours_Mirissa-Mirissa_Southern_Province.html",
+    icon: <TripAdvisorIcon />,
+  },
+  {
+    name: "Email",
+    href: "mailto:muthutoursmirissa@gmail.com",
+    icon: <MailIcon />,
+  },
+];
+
 const galleryImages = [
   { src: "/images/14.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/2.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/25.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/3.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya2.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya3.jpg", alt: "Muthu Tour destination" },
   { src: "/images/6.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/8.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/9.jpeg", alt: "Muthu Tour destination" },
@@ -231,6 +283,32 @@ const galleryImages = [
   { src: "/images/30.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/32.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/33.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/34.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/whale1.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/whale2.jpg", alt: "Muthu Tour destination" },
+];
+
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61591632323356",
+    icon: "facebook.png",
+  },
+  {
+    name: "WhatsApp",
+    href: "https://wa.me/94714013477",
+    icon: "whatsapp.png",
+  },
+  {
+    name: "TripAdvisor",
+    href: "https://www.tripadvisor.com/Attraction_Review-g1407334-d12732132-Reviews-Muthu_Tours_Mirissa-Mirissa_Southern_Province.html",
+    icon: "tripadvisor.png",
+  },
+  {
+    name: "Email",
+    href: "mailto:muthutoursmirissa@gmail.com",
+    icon: "email.png",
+  },
 ];
 
 // Animation variants with proper typing
@@ -380,7 +458,7 @@ export default function Home() {
           {/* Background Audio */}
           <audio ref={audioRef} src="/audio/bg-music.mp3" loop preload="auto" />
 
-          {/* Music Control Button - positioned absolutely within Hero section */}
+          {/* Music Control Button */}
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -419,12 +497,13 @@ export default function Home() {
             )}
           </motion.button>
 
-          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
+          {/* Main Hero Content */}
+          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center sm:mt-20 mt-18">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-2"
             >
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
@@ -450,18 +529,19 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed font-light"
+              className="text-lg md:text-xl text-slate-200 mb-6 max-w-2xl mx-auto leading-relaxed font-light"
             >
               Experience the thrill of deep-sea fishing and the serenity of
-              snorkeling with Muthu Tours. Your gateway to Sri Lanka&#39;s
+              snorkeling with Muthu Tours. Your gateway to Sri Lanka&apos;s
               underwater wonders.
             </motion.p>
 
+            {/* Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-6"
             >
               <Button
                 size="lg"
@@ -487,15 +567,42 @@ export default function Home() {
                 </Button>
               </ScrollToSection>
             </motion.div>
-          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="absolute bottom-8 left-4 right-4 md:bottom-12 md:left-1/2 md:-translate-x-1/2 md:w-auto w-auto z-20"
-          >
-            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:px-8 md:py-5 flex flex-wrap justify-center gap-6 md:gap-12 shadow-2xl">
+            {/* Social Links — horizontally between buttons and stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="flex justify-center gap-4 md:gap-5 mb-6 sm:mt-6 mt-14 flex-wrap"
+            >
+              {socialLinks.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.name}
+                  className="w-10 h-10 md:w-13 md:h-13 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-lg"
+                >
+                  <span className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center">
+                    {/* Render the icon as an <img> from the public folder */}
+                    <img
+                      src={`/icons/${item.icon}`}
+                      alt={item.name}
+                      className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                    />
+                  </span>
+                </a>
+              ))}
+            </motion.div>
+
+            {/* Stats Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:mt-0 mt-5 md:px-8 md:py-5 flex flex-wrap justify-center gap-6 md:gap-12 shadow-2xl w-auto"
+            >
               {[
                 { icon: <AnchorIcon size={20} />, text: "Expert Captains" },
                 { icon: <UsersIcon />, text: "Private Groups" },
@@ -515,8 +622,8 @@ export default function Home() {
                   </span>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </section>
 
         {/* --- Tours Section --- */}
@@ -864,7 +971,7 @@ export default function Home() {
                   {[
                     { label: "Years Active", value: "8+" },
                     { label: "Happy Guests", value: "5k+" },
-                    { label: "Rating", value: "5.0" },
+                    { label: "Rating", value: "4.7" },
                     { label: "Safety Record", value: "100%" },
                   ].map((stat, i) => (
                     <motion.div
@@ -1592,11 +1699,35 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-            <div className="pt-8 border-t border-white/10 text-center text-xs text-slate-400">
-              <p>
+            <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <p className="text-xs text-slate-400 text-center md:text-left">
                 &copy; {new Date().getFullYear()} Muthu Tours Mirissa. All
                 rights reserved.
+                <br />
+                Design &amp; Developed by{` `}
+                <a
+                  href="https://www.devplux.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 font-medium hover:underline hover:text-blue-300 transition-colors"
+                >
+                  DevPlux IT Solutions
+                </a>
               </p>
+              <div className="flex items-center gap-3">
+                {socialLinksFooter.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.name}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500/80 border border-white/10 hover:border-blue-400 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 backdrop-blur-md"
+                  >
+                    {item.icon}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </footer>

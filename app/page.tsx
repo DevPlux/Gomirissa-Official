@@ -385,7 +385,30 @@ export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedTourId, setSelectedTourId] = useState<TourId | "">("");
 
+  // ----- Shuffle state & interval -----
+  const [displayImages, setDisplayImages] = useState(galleryImages);
+
   // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // shuffle function
+  const shuffleImages = () => {
+    const shuffled = [...galleryImages].sort(() => Math.random() - 0.5);
+    setDisplayImages(shuffled);
+  };
+
+  // initial shuffle + interval every 20 seconds
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    shuffleImages(); // initial random order
+    const interval = setInterval(shuffleImages, 10000); // 20 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  // ---- other states and effects ----
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
@@ -766,14 +789,12 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Gallery Section with Background Images --- */}
+        {/* ---- Gallery Section WITH SHUFFLE EVERY 20s ---- */}
         <section
           id="gallery"
           className="py-24 bg-white relative overflow-hidden"
         >
-          {/* Background Image Container */}
           <div className="absolute inset-0 z-0">
-            {/* Desktop image – hidden on mobile */}
             <Image
               src={GalleryBG}
               alt="Gallery background desktop"
@@ -781,7 +802,6 @@ export default function Home() {
               className="object-cover hidden md:block"
               priority={false}
             />
-            {/* Mobile image – hidden on desktop */}
             <Image
               src={GalleryMobileBG}
               alt="Gallery background mobile"
@@ -789,8 +809,6 @@ export default function Home() {
               className="object-cover block md:hidden"
               priority={false}
             />
-
-            {/* Subtle gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/90" />
           </div>
 
@@ -823,11 +841,11 @@ export default function Home() {
                 variants={staggerContainer}
                 className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]"
               >
-                {galleryImages
+                {displayImages
                   .slice(
                     0,
                     isGalleryExpanded
-                      ? galleryImages.length
+                      ? displayImages.length
                       : initialGalleryCount,
                   )
                   .map((img, idx) => (
@@ -838,7 +856,7 @@ export default function Home() {
                       transition={{ duration: 0.3 }}
                       onClick={() => setSelectedImage(img.src)}
                       className={`relative rounded-2xl overflow-hidden cursor-zoom-in group shadow-md
-              ${idx === 0 && !isGalleryExpanded ? "col-span-2 row-span-2 md:col-span-2 md:row-span-2" : "col-span-1 row-span-1"}`}
+                        ${idx === 0 && !isGalleryExpanded ? "col-span-2 row-span-2 md:col-span-2 md:row-span-2" : "col-span-1 row-span-1"}`}
                     >
                       <img
                         src={img.src}
@@ -883,7 +901,7 @@ export default function Home() {
               >
                 {isGalleryExpanded
                   ? "Show Less"
-                  : `Load More Images (${galleryImages.length - initialGalleryCount} more)`}
+                  : `Load More Images (${displayImages.length - initialGalleryCount} more)`}
               </Button>
             </motion.div>
           </div>

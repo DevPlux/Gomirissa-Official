@@ -1,7 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  Variants,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+
+import PackagesBG from "@/assets/fish5.png";
+import GalleryBG from "@/assets/galley.png";
+import GalleryMobileBG from "@/assets/galleryMobileBGsvg.svg";
+import AboutBG from "@/assets/fish6.png";
+import TestoBG from "@/assets/fish8.png";
+import MuthuBG from "@/assets/underwater.svg";
+import MuthuMobileBG from "@/assets/MuthuMobileBG.svg";
+import ContactMobileBG from "@/assets/ContactMobileBG.svg";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -187,16 +203,67 @@ const testimonials = [
   },
 ];
 
+const FacebookIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
+    <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z" />
+  </svg>
+);
+
+const WhatsAppIcon = () => (
+  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#25D366">
+    <path d="M12.02 2C6.5 2 2.02 6.48 2.02 12c0 1.88.51 3.65 1.4 5.17L2 22l4.97-1.36A9.96 9.96 0 0012.02 22c5.52 0 10-4.48 10-10S17.54 2 12.02 2zm5.45 12.38c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.94-.93 1.14-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.5-.17 0-.36-.02-.56-.02-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.19 2.05 3.13 4.97 4.39.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.11.55-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.26-.19-.55-.34z" />
+  </svg>
+);
+
+const TripAdvisorIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#34E0A1"
+    strokeWidth="2"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="8.5" cy="12" r="2.4" />
+    <circle cx="15.5" cy="12" r="2.4" />
+  </svg>
+);
+
+const socialLinksFooter = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61591632323356",
+    icon: <FacebookIcon />,
+  },
+  {
+    name: "WhatsApp",
+    href: "https://wa.me/94714013477",
+    icon: <WhatsAppIcon />,
+  },
+  {
+    name: "TripAdvisor",
+    href: "https://www.tripadvisor.com/Attraction_Review-g1407334-d12732132-Reviews-Muthu_Tours_Mirissa-Mirissa_Southern_Province.html",
+    icon: <TripAdvisorIcon />,
+  },
+  {
+    name: "Email",
+    href: "mailto:muthutoursmirissa@gmail.com",
+    icon: <MailIcon />,
+  },
+];
+
 const galleryImages = [
   { src: "/images/14.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/2.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/25.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/3.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya2.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/muthuayya3.jpg", alt: "Muthu Tour destination" },
   { src: "/images/6.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/8.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/9.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/10.jpeg", alt: "Muthu Tour destination" },
-  { src: "/images/23.jpeg", alt: "Muthu Tour destination" },
-  { src: "/images/24.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/12.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/13.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/15.jpeg", alt: "Muthu Tour destination" },
@@ -206,6 +273,42 @@ const galleryImages = [
   { src: "/images/19.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/20.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/21.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/22.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/23.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/24.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/26.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/27.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/28.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/29.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/30.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/32.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/33.jpeg", alt: "Muthu Tour destination" },
+  { src: "/images/34.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/whale1.jpg", alt: "Muthu Tour destination" },
+  { src: "/images/whale2.jpg", alt: "Muthu Tour destination" },
+];
+
+const socialLinks = [
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61591632323356",
+    icon: "facebook.png",
+  },
+  {
+    name: "WhatsApp",
+    href: "https://wa.me/94714013477",
+    icon: "whatsapp.png",
+  },
+  {
+    name: "TripAdvisor",
+    href: "https://www.tripadvisor.com/Attraction_Review-g1407334-d12732132-Reviews-Muthu_Tours_Mirissa-Mirissa_Southern_Province.html",
+    icon: "tripadvisor.png",
+  },
+  {
+    name: "Email",
+    href: "mailto:muthutoursmirissa@gmail.com",
+    icon: "email.png",
+  },
 ];
 
 // Animation variants with proper typing
@@ -282,7 +385,30 @@ export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedTourId, setSelectedTourId] = useState<TourId | "">("");
 
+  // ----- Shuffle state & interval -----
+  const [displayImages, setDisplayImages] = useState(galleryImages);
+
   // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // shuffle function
+  const shuffleImages = () => {
+    const shuffled = [...galleryImages].sort(() => Math.random() - 0.5);
+    setDisplayImages(shuffled);
+  };
+
+  // initial shuffle + interval every 20 seconds
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    shuffleImages(); // initial random order
+    const interval = setInterval(shuffleImages, 10000); // 20 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  // ---- other states and effects ----
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
@@ -298,34 +424,33 @@ export default function Home() {
     if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Loading screen
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-white text-lg font-medium"
-          >
-            Loading Mirissa Adventures...
-          </motion.p>
-        </motion.div>
-      </div>
-    );
-  }
+  const toursSectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: toursScroll } = useScroll({
+    target: toursSectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const toursBgY = useTransform(toursScroll, [0, 1], ["-8%", "8%"]);
+  const toursBgScale = useTransform(toursScroll, [0, 1], [1.15, 1.3]);
+  const toursBgOpacity = useTransform(
+    toursScroll,
+    [0, 0.3, 0.7, 1],
+    [0.15, 0.35, 0.35, 0.15],
+  );
+
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isMusicPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(() => {});
+      }
+      setIsMusicPlaying(!isMusicPlaying);
+    }
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -338,7 +463,7 @@ export default function Home() {
         {/* --- Navigation --- */}
         <Navbar onBookNow={() => setBookingOpen(true)} />
 
-        {/* --- Hero Section --- */}
+        {/* --- Hero Section with Background Music --- */}
         <section className="relative h-screen flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <video
@@ -348,17 +473,60 @@ export default function Home() {
               playsInline
               className="absolute inset-0 w-full h-full object-cover scale-105"
             >
-              <source src="/videos/fish.mp4" type="video/mp4" />
+              <source src="/videos/deep_Sea.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-slate-900/90" />
           </div>
 
-          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
+          {/* Background Audio */}
+          <audio ref={audioRef} src="/audio/bg-music.mp3" loop preload="auto" />
+
+          {/* Music Control Button */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8 }}
+            onClick={toggleMusic}
+            className="absolute bottom-6 right-4 md:bottom-8 md:right-8 z-30 bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-3 text-white hover:bg-white/20 transition-all shadow-lg"
+            aria-label="Toggle background music"
+          >
+            {isMusicPlaying ? (
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 md:w-6 md:h-6"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+                  opacity="0.5"
+                />
+                <line
+                  x1="4.5"
+                  y1="4.5"
+                  x2="19.5"
+                  y2="19.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+            )}
+          </motion.button>
+
+          {/* Main Hero Content */}
+          <div className="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center sm:mt-20 mt-18">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-8"
+              className="inline-flex font- items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-medium -mb-1"
             >
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
@@ -384,18 +552,19 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-lg md:text-xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed font-light"
+              className="text-lg md:text-xl text-slate-200 mb-6 max-w-2xl mx-auto leading-relaxed font-light"
             >
               Experience the thrill of deep-sea fishing and the serenity of
-              snorkeling with Muthu Tours. Your gateway to Sri Lanka&#39;s
+              snorkeling with Muthu Tours. Your gateway to Sri Lanka&apos;s
               underwater wonders.
             </motion.p>
 
+            {/* Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-6"
             >
               <Button
                 size="lg"
@@ -421,15 +590,42 @@ export default function Home() {
                 </Button>
               </ScrollToSection>
             </motion.div>
-          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="absolute bottom-8 left-4 right-4 md:bottom-12 md:left-1/2 md:-translate-x-1/2 md:w-auto w-auto z-20"
-          >
-            <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 md:px-8 md:py-5 flex flex-wrap justify-center gap-6 md:gap-12 shadow-2xl">
+            {/* Social Links — horizontally between buttons and stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="flex justify-center gap-4 md:gap-5 mb-6 sm:mt-5 mt-14 flex-wrap"
+            >
+              {socialLinks.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.name}
+                  className="w-10 h-10 md:w-13 md:h-13 rounded-full bg-white/10 backdrop-blur-md border border-white/30 flex items-center justify-center text-white hover:bg-white/20 hover:scale-110 transition-all duration-300 shadow-lg"
+                >
+                  <span className="w-6 h-6 md:w-7 md:h-7 flex items-center justify-center">
+                    {/* Render the icon as an <img> from the public folder */}
+                    <img
+                      src={`/icons/${item.icon}`}
+                      alt={item.name}
+                      className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                    />
+                  </span>
+                </a>
+              ))}
+            </motion.div>
+
+            {/* Stats Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 sm:mt-0 mt-5 md:px-8 md:py-5 flex flex-wrap justify-center gap-6 md:gap-12 shadow-2xl w-auto"
+            >
               {[
                 { icon: <AnchorIcon size={20} />, text: "Expert Captains" },
                 { icon: <UsersIcon />, text: "Private Groups" },
@@ -449,14 +645,37 @@ export default function Home() {
                   </span>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </section>
 
         {/* --- Tours Section --- */}
-        <section id="tours" className="py-24 bg-slate-50 relative">
-          <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-900/5 to-transparent pointer-events-none" />
-          <div className="max-w-7xl mx-auto px-6">
+        <section
+          id="tours"
+          ref={toursSectionRef}
+          className="py-24 bg-slate-50 relative overflow-hidden"
+        >
+          {/* Animated parallax background image */}
+          <motion.div
+            className="absolute inset-0 z-10 pointer-events-none"
+            style={{
+              y: toursBgY,
+              scale: toursBgScale,
+              opacity: toursBgOpacity,
+            }}
+          >
+            <Image
+              src={PackagesBG}
+              alt=""
+              fill
+              className="object-cover"
+              priority={false}
+            />
+          </motion.div>
+
+          <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-slate-900/5 to-transparent pointer-events-none z-0" />
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -505,7 +724,7 @@ export default function Home() {
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
                         <Badge
-                          className={`absolute top-4 left-4 border-0 px-3 py-1.5 ${tour.badgeColor} shadow-lg backdrop-blur-sm`}
+                          className={`absolute top-4 left-4 border-0 px-3 py-1.5 ${tour.badgeColor} shadow-lg backdrop-blur-sm rounded-xl`}
                         >
                           {tour.badge}
                         </Badge>
@@ -570,9 +789,30 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Gallery Section --- */}
-        <section id="gallery" className="py-24 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
+        {/* ---- Gallery Section WITH SHUFFLE EVERY 20s ---- */}
+        <section
+          id="gallery"
+          className="py-24 bg-white relative overflow-hidden"
+        >
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={GalleryBG}
+              alt="Gallery background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            <Image
+              src={GalleryMobileBG}
+              alt="Gallery background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/90" />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -601,11 +841,11 @@ export default function Home() {
                 variants={staggerContainer}
                 className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[200px]"
               >
-                {galleryImages
+                {displayImages
                   .slice(
                     0,
                     isGalleryExpanded
-                      ? galleryImages.length
+                      ? displayImages.length
                       : initialGalleryCount,
                   )
                   .map((img, idx) => (
@@ -616,7 +856,7 @@ export default function Home() {
                       transition={{ duration: 0.3 }}
                       onClick={() => setSelectedImage(img.src)}
                       className={`relative rounded-2xl overflow-hidden cursor-zoom-in group shadow-md
-              ${idx === 0 && !isGalleryExpanded ? "col-span-2 row-span-2 md:col-span-2 md:row-span-2" : "col-span-1 row-span-1"}`}
+                        ${idx === 0 && !isGalleryExpanded ? "col-span-2 row-span-2 md:col-span-2 md:row-span-2" : "col-span-1 row-span-1"}`}
                     >
                       <img
                         src={img.src}
@@ -661,7 +901,7 @@ export default function Home() {
               >
                 {isGalleryExpanded
                   ? "Show Less"
-                  : `Load More Images (${galleryImages.length - initialGalleryCount} more)`}
+                  : `Load More Images (${displayImages.length - initialGalleryCount} more)`}
               </Button>
             </motion.div>
           </div>
@@ -672,8 +912,22 @@ export default function Home() {
           id="about"
           className="py-16 lg:py-24 bg-slate-50 relative overflow-hidden"
         >
-          <div className="absolute top-0 left-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+          {/* Background Image with Next.js Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={MuthuBG}
+              alt="Ocean background"
+              fill
+              className="object-cover"
+              priority={false}
+            />
+            {/* Semi-transparent overlay to keep text readable */}
+            <div className="absolute inset-0 bg-slate-50/90" />
+          </div>
+
+          {/* Decorative blur circles - now with z-1 to stay above background */}
+          <div className="absolute top-0 left-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2 z-1" />
+          <div className="absolute bottom-0 right-0 w-64 h-64 lg:w-[500px] lg:h-[500px] bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2 z-1" />
 
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -684,7 +938,7 @@ export default function Home() {
                 variants={fadeInLeft}
                 className="order-1"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide mb-6">
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-base md:text-lg font-bold tracking-wider uppercase shadow-lg shadow-blue-200/50 mb-8">
                   Established 2010
                 </div>
                 <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
@@ -723,7 +977,7 @@ export default function Home() {
                     </span>
                     A Note from Sandun
                   </h4>
-                  <p className="italic text-slate-600 text-sm md:text-base">
+                  <p className="italic text-slate-600 text-sm md:text-base font-semibold">
                     &#34;I handle every tour coordination myself. No agents, no
                     middlemen. When you book with Muthu Tours, you are booking
                     directly with me and my local crew. Watch out for
@@ -735,7 +989,7 @@ export default function Home() {
                   {[
                     { label: "Years Active", value: "8+" },
                     { label: "Happy Guests", value: "5k+" },
-                    { label: "Rating", value: "5.0" },
+                    { label: "Rating", value: "4.7" },
                     { label: "Safety Record", value: "100%" },
                   ].map((stat, i) => (
                     <motion.div
@@ -793,30 +1047,71 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Testimonials Section --- */}
+        {/* --- Testimonials Section with Background Images --- */}
         <section
           id="testimonials"
-          className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white"
+          className="py-24 bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image – hidden on mobile */}
+            <Image
+              src={TestoBG}
+              alt="Testimonials background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image – hidden on desktop */}
+            <Image
+              src={MuthuMobileBG}
+              alt="Testimonials background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+            {/* Overlay to keep text readable (darkens the image) */}
+            <div className="absolute inset-0 bg-slate-900/70" />
+            {/* Additional gradient overlay for smooth blending */}
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/70 to-slate-800/80" />
+          </div>
+
+          {/* Subtle decorative elements (now above the image) */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl z-1" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl z-1" />
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="flex flex-col md:flex-row justify-between items-end mb-16 gap-4"
+              className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6"
             >
               <div>
-                <Badge className="bg-blue-500/20 text-blue-200 hover:bg-blue-500/30 mb-4 border-0">
-                  Traveler Reviews
+                <Badge className="bg-blue-500/20 text-blue-200 hover:bg-blue-500/30 mb-4 border-0 px-4 py-2 text-sm backdrop-blur-sm">
+                  ⭐ Traveler Reviews
                 </Badge>
-                <h2 className="text-4xl md:text-5xl font-bold">
-                  Stories from the Sea
+                <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+                  Stories from the{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-200">
+                    Sea
+                  </span>
                 </h2>
+                <p className="text-slate-400 mt-3 text-lg max-w-2xl">
+                  Real experiences from adventurers who sailed with us.
+                </p>
               </div>
-              <div className="flex items-center gap-2 text-yellow-400 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
-                <StarIcon /> <span className="font-bold text-white">5.0</span>{" "}
-                <span className="text-white/60 text-sm">Average Rating</span>
+              <div className="flex items-center gap-3 bg-white/10 px-5 py-3 rounded-full backdrop-blur-md border border-white/10 shadow-lg flex-shrink-0">
+                <span className="text-2xl font-bold text-yellow-400">5.0</span>
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon key={i} />
+                  ))}
+                </div>
+                <span className="text-xs text-slate-400 font-medium ml-1">
+                  (200+ reviews)
+                </span>
               </div>
             </motion.div>
 
@@ -825,31 +1120,58 @@ export default function Home() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
             >
               {testimonials.map((t, idx) => (
                 <motion.div
                   key={idx}
                   variants={cardVariants}
-                  whileHover="hover"
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  className="group relative"
                 >
-                  <Card className="bg-white/5 border-white/10 backdrop-blur-sm text-slate-100 hover:bg-white/10 transition-colors duration-300">
-                    <CardContent className="pt-6">
+                  {/* Glow effect on hover */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <Card className="relative bg-white/5 backdrop-blur-md border border-white/10 hover:border-white/20 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                    {/* Decorative quote icon */}
+                    <div className="absolute top-2 right-3 text-8xl rotate-3 text-white/5 font-serif select-none">
+                      &#8220;
+                    </div>
+
+                    <CardContent className="pt-8 px-6 pb-6">
+                      {/* Rating with larger stars */}
                       <div className="flex gap-1 text-yellow-400 mb-4">
                         {[...Array(t.rating)].map((_, i) => (
                           <StarIcon key={i} />
                         ))}
                       </div>
-                      <p className="text-slate-300 text-sm leading-relaxed mb-6 min-h-[80px]">
+
+                      {/* Testimonial text */}
+                      <p className="text-slate-200 text-sm leading-relaxed mb-6 min-h-[80px] relative z-10 italic">
                         &#34;{t.text}&#34;
                       </p>
-                      <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-white text-sm shadow-lg">
+
+                      {/* Divider */}
+                      <div className="h-px w-full bg-gradient-to-r from-white/10 via-white/20 to-transparent mb-4" />
+
+                      {/* Author section */}
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-white text-xl shadow-lg ring-2 ring-white/20 flex-shrink-0">
                           {t.avatar}
                         </div>
-                        <div>
-                          <p className="font-semibold text-sm">{t.name}</p>
-                          <p className="text-xs text-slate-400">{t.location}</p>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-white text-lg truncate leading-tight">
+                            {t.name}
+                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-xs text-slate-400 truncate">
+                              {t.location}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-emerald-400 flex-shrink-0" />
+                            <span className="text-[10px] text-emerald-400 font-medium flex-shrink-0">
+                              ✓
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -860,12 +1182,32 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Contact Section --- */}
+        {/* --- Contact Section with Background Images --- */}
         <section
           id="contact"
-          className="py-24 bg-gradient-to-b from-white to-slate-50"
+          className="py-24 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto px-6">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image – hidden on mobile */}
+            <Image
+              src={MuthuBG}
+              alt="Contact background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image – hidden on desktop */}
+            <Image
+              src={ContactMobileBG}
+              alt="Contact background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+          </div>
+
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -928,8 +1270,8 @@ export default function Home() {
                       {
                         icon: <PhoneIcon />,
                         title: "Call / WhatsApp",
-                        content: "+94 71 434 3478",
-                        link: "https://wa.me/94714343478",
+                        content: "+94 71 401 3477",
+                        link: "https://wa.me/94714013477",
                       },
                       {
                         icon: <MailIcon />,
@@ -994,7 +1336,7 @@ export default function Home() {
               </div>
 
               {/* Right side - Form */}
-              <div className="lg:w-3/5 bg-white p-8 md:p-12">
+              <div className="lg:w-3/5 bg-white/95 backdrop-blur-sm p-8 md:p-12">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -1230,12 +1572,36 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- Footer (same as before, keep the ScrollToSection usage) --- */}
-        <footer className="bg-slate-950 text-slate-400 py-16 border-t border-slate-900">
-          <div className="max-w-7xl mx-auto px-6">
+        {/* --- Footer with Background Images (Fixed) --- */}
+        <footer className="relative text-slate-400 py-16 border-t border-slate-800 overflow-hidden bg-slate-900">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0">
+            {/* Desktop image */}
+            <Image
+              src={AboutBG}
+              alt="Footer background desktop"
+              fill
+              className="object-cover hidden md:block"
+              priority={false}
+            />
+            {/* Mobile image */}
+            <Image
+              src={MuthuMobileBG}
+              alt="Footer background mobile"
+              fill
+              className="object-cover block md:hidden"
+              priority={false}
+            />
+            {/* Lighter overlay to let the image show through */}
+            <div className="absolute inset-0 bg-slate-900/70" />
+            {/* Subtle gradient for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+          </div>
+
+          {/* Content */}
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               <div className="space-y-4">
-                {/* Logo + Brand Name */}
                 <div className="flex items-center gap-3 text-white">
                   <div className="relative w-14 h-14 flex-shrink-0">
                     <Image
@@ -1246,12 +1612,11 @@ export default function Home() {
                       priority
                     />
                   </div>
-
                   <span className="text-xl font-bold tracking-wide">
                     GoMirissa
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed">
+                <p className="text-sm leading-relaxed text-slate-300">
                   Creating unforgettable ocean memories in Sri Lanka since 2010.
                   Authentic, safe, and locally guided.
                 </p>
@@ -1261,28 +1626,28 @@ export default function Home() {
                 <ul className="space-y-3 text-sm">
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Snorkeling with Turtles
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Snorkeling with Whales
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Deep Sea Fishing
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#tours">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Private Boat Hire
                       </span>
                     </ScrollToSection>
@@ -1294,28 +1659,28 @@ export default function Home() {
                 <ul className="space-y-3 text-sm">
                   <li>
                     <ScrollToSection href="#about">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         About Us
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#gallery">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Gallery
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#testimonials">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Reviews
                       </span>
                     </ScrollToSection>
                   </li>
                   <li>
                     <ScrollToSection href="#contact">
-                      <span className="hover:text-blue-500 transition-colors cursor-pointer">
+                      <span className="hover:text-blue-400 transition-colors cursor-pointer">
                         Contact
                       </span>
                     </ScrollToSection>
@@ -1328,7 +1693,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Privacy Policy
                     </a>
@@ -1336,7 +1701,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Terms of Service
                     </a>
@@ -1344,7 +1709,7 @@ export default function Home() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-500 transition-colors"
+                      className="hover:text-blue-400 transition-colors"
                     >
                       Cancellation Policy
                     </a>
@@ -1352,11 +1717,35 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-            <div className="pt-8 border-t border-slate-900 text-center text-xs">
-              <p>
+            <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <p className="text-xs text-slate-400 text-center md:text-left">
                 &copy; {new Date().getFullYear()} Muthu Tours Mirissa. All
                 rights reserved.
+                <br />
+                Design &amp; Developed by{` `}
+                <a
+                  href="https://www.devplux.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 font-medium hover:underline hover:text-blue-300 transition-colors"
+                >
+                  DevPlux IT Solutions
+                </a>
               </p>
+              <div className="flex items-center gap-3">
+                {socialLinksFooter.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={item.name}
+                    className="w-10 h-10 rounded-full bg-white/10 hover:bg-blue-500/80 border border-white/10 hover:border-blue-400 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 backdrop-blur-md"
+                  >
+                    {item.icon}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </footer>

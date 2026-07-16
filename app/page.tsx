@@ -503,7 +503,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium mb-2"
+              className="inline-flex font- items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-medium -mb-1"
             >
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
@@ -573,7 +573,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="flex justify-center gap-4 md:gap-5 mb-6 sm:mt-6 mt-14 flex-wrap"
+              className="flex justify-center gap-4 md:gap-5 mb-6 sm:mt-5 mt-14 flex-wrap"
             >
               {socialLinks.map((item) => (
                 <a

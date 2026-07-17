@@ -602,9 +602,10 @@ export default function BookingDialog({
                       ) : (
                         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
                           This option is <strong>camera rental only</strong> —
-                          no guided snorkeling tour is included. If you'd like
-                          to join a guided Shore or Boat snorkeling trip, choose
-                          "Without Camera" or "With Free Camera" instead.
+                          no guided snorkeling tour is included. If you&#39;d
+                          like to join a guided Shore or Boat snorkeling trip,
+                          choose &#34;Without Camera&#34; or &#34;With Free
+                          Camera&#34; instead.
                         </div>
                       )}
 

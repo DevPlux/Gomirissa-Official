@@ -75,7 +75,7 @@ export const tours: Tour[] = [
     id: "snorkeling",
     title: "Snorkeling with Turtles",
     description:
-      "Discover vibrant coral reefs, colorful tropical fish, and swim alongside sea turtles in the clear waters near Mirissa. Choose a quick shore snorkel (1.5 hrs) or a full boat tour (3 hrs) covering deep water, coral reef, and shallow turtle spots.",
+      "Discover vibrant coral reefs, colorful tropical fish, and swim alongside sea turtles in the clear waters near Mirissa. Choose a quick shore snorkel (1.5 hrs) or a full boat tour (3 hrs) covering deep water, coral reef, and shallow turtle spots. Camera rental available, with or without the tour.",
     price: 20,
     duration: "1.5–3 hours",
     maxGuests: 12,
@@ -83,10 +83,9 @@ export const tours: Tour[] = [
     features: [
       "All equipment provided",
       "Professional instructor",
+      "Choose Shore (1.5 hrs) or Boat Tour w/ coral reef (3 hrs)",
       "Visit turtle hotspots",
       "Fruits & refreshments",
-      "Shore option: shallow & safe areas (1.5 hrs)",
-      "Boat option: coral reef, deep water & shallow reef, colorful fish & turtles (3 hrs)",
       "Eco-friendly practices",
     ],
     badge: "Most Popular",
@@ -103,12 +102,11 @@ export const tours: Tour[] = [
     image:
       "https://cdn.sanity.io/images/esqfj3od/production/3bf47706fcbf56cf473827e4f2fcdbe0383d8242-1080x720.webp?w=800&q=65&fit=clip&auto=format",
     features: [
-      "Responsible approach",
+      "Seasonal (Dec–Apr)",
       "High-quality gear",
       "Expert marine guide",
       "Weather dependent",
       "Photos included",
-      "Seasonal (Dec–Apr)",
     ],
     badge: "Unique Experience",
     badgeColor: "bg-cyan-500 text-white",

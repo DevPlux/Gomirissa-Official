@@ -226,6 +226,19 @@ const TripAdvisorIcon = () => (
   </svg>
 );
 
+const CameraIcon = () => (
+  <svg
+    className="w-4 h-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+    <circle cx="12" cy="13" r="4" />
+  </svg>
+);
+
 // Testimonials data
 const testimonials = [
   {
@@ -776,8 +789,15 @@ export default function Home() {
                         </Badge>
                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
                           <div>
-                            <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md mb-2 w-fit">
-                              <ClockIcon /> {tour.duration}
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md w-fit">
+                                <ClockIcon /> {tour.duration}
+                              </div>
+                              {tour.id === "snorkeling" && (
+                                <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md w-fit">
+                                  <CameraIcon /> Camera available
+                                </div>
+                              )}
                             </div>
                             <h3 className="text-2xl font-bold leading-tight">
                               {tour.title}
@@ -791,10 +811,10 @@ export default function Home() {
                           {tour.description}
                         </p>
                         <div className="space-y-3 mb-6">
-                          {tour.features.slice(0, 4).map((feature, idx) => (
+                          {tour.features.slice(0, 5).map((feature, idx) => (
                             <div
                               key={idx}
-                              className="flex items-start gap-3 text-sm text-slate-700"
+                              className="flex items-start gap-3 text-sm text-slate-600 font-semibold"
                             >
                               <div className="text-green-500 mt-0.5">
                                 <CheckIcon />
@@ -822,7 +842,7 @@ export default function Home() {
 
                         <Button
                           onClick={() => handleBookNow(tour.id)}
-                          className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
+                          className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
                         >
                           Book Now
                         </Button>

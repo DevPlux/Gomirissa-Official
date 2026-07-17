@@ -243,7 +243,7 @@ export default function RegisterPage() {
             <h2 className="text-2xl font-extrabold text-white tracking-tight">
               Create Account
             </h2>
-            <p className="text-white/50 text-xs mt-1">
+            <p className="text-white/80 text-xs mt-1">
               Start your journey with Gomirissa
             </p>
           </div>

@@ -168,6 +168,78 @@ const CheckIcon = () => (
   </svg>
 );
 
+const FacebookIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#1877F2" // Facebook blue
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z" />
+  </svg>
+);
+
+const InstagramIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#E4405F" // Instagram pink/red
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+  </svg>
+);
+
+const WhatsAppIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#25D366" // WhatsApp green
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12.02 2C6.5 2 2.02 6.48 2.02 12c0 1.88.51 3.65 1.4 5.17L2 22l4.97-1.36A9.96 9.96 0 0012.02 22c5.52 0 10-4.48 10-10S17.54 2 12.02 2zm5.45 12.38c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.94-.93 1.14-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.5-.17 0-.36-.02-.56-.02-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.19 2.05 3.13 4.97 4.39.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.11.55-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.26-.19-.55-.34z" />
+  </svg>
+);
+
+const TripAdvisorIcon = () => (
+  <svg
+    className="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#34E0A1" // Keep as is, or use TripAdvisor's official green (#00A87E)
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="8.5" cy="12" r="2.4" />
+    <circle cx="15.5" cy="12" r="2.4" />
+  </svg>
+);
+
+const CameraIcon = () => (
+  <svg
+    className="w-4 h-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+    <circle cx="12" cy="13" r="4" />
+  </svg>
+);
+
+// Testimonials data
 const testimonials = [
   {
     name: "Sarah Davies",
@@ -203,37 +275,17 @@ const testimonials = [
   },
 ];
 
-const FacebookIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
-    <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z" />
-  </svg>
-);
-
-const WhatsAppIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#25D366">
-    <path d="M12.02 2C6.5 2 2.02 6.48 2.02 12c0 1.88.51 3.65 1.4 5.17L2 22l4.97-1.36A9.96 9.96 0 0012.02 22c5.52 0 10-4.48 10-10S17.54 2 12.02 2zm5.45 12.38c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.94-.93 1.14-.17.19-.34.22-.63.07-.29-.15-1.22-.45-2.33-1.44-.86-.77-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.19-.29.29-.49.1-.19.05-.36-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.5-.17 0-.36-.02-.56-.02-.19 0-.51.07-.78.36-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.82 1.19 3.01.15.19 2.05 3.13 4.97 4.39.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.11.55-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.26-.19-.55-.34z" />
-  </svg>
-);
-
-const TripAdvisorIcon = () => (
-  <svg
-    className="w-5 h-5"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#34E0A1"
-    strokeWidth="2"
-  >
-    <circle cx="12" cy="12" r="9" />
-    <circle cx="8.5" cy="12" r="2.4" />
-    <circle cx="15.5" cy="12" r="2.4" />
-  </svg>
-);
-
+// Social links for the footer
 const socialLinksFooter = [
   {
     name: "Facebook",
     href: "https://www.facebook.com/profile.php?id=61591632323356",
     icon: <FacebookIcon />,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/gomirissa_lk/",
+    icon: <InstagramIcon />,
   },
   {
     name: "WhatsApp",
@@ -252,6 +304,7 @@ const socialLinksFooter = [
   },
 ];
 
+// Gallery images for the gallery section
 const galleryImages = [
   { src: "/images/14.jpeg", alt: "Muthu Tour destination" },
   { src: "/images/2.jpeg", alt: "Muthu Tour destination" },
@@ -288,11 +341,17 @@ const galleryImages = [
   { src: "/images/whale2.jpg", alt: "Muthu Tour destination" },
 ];
 
+// Social links for the hero section
 const socialLinks = [
   {
     name: "Facebook",
     href: "https://www.facebook.com/profile.php?id=61591632323356",
     icon: "facebook.png",
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/gomirissa_lk/",
+    icon: "instagram.png",
   },
   {
     name: "WhatsApp",
@@ -730,8 +789,15 @@ export default function Home() {
                         </Badge>
                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
                           <div>
-                            <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md mb-2 w-fit">
-                              <ClockIcon /> {tour.duration}
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md w-fit">
+                                <ClockIcon /> {tour.duration}
+                              </div>
+                              {tour.id === "snorkeling" && (
+                                <div className="flex items-center gap-1.5 text-xs font-medium bg-black/30 backdrop-blur-md px-2 py-1 rounded-md w-fit">
+                                  <CameraIcon /> Camera available
+                                </div>
+                              )}
                             </div>
                             <h3 className="text-2xl font-bold leading-tight">
                               {tour.title}
@@ -745,10 +811,10 @@ export default function Home() {
                           {tour.description}
                         </p>
                         <div className="space-y-3 mb-6">
-                          {tour.features.slice(0, 4).map((feature, idx) => (
+                          {tour.features.slice(0, 5).map((feature, idx) => (
                             <div
                               key={idx}
-                              className="flex items-start gap-3 text-sm text-slate-700"
+                              className="flex items-start gap-3 text-sm text-slate-600 font-semibold"
                             >
                               <div className="text-green-500 mt-0.5">
                                 <CheckIcon />
@@ -776,7 +842,7 @@ export default function Home() {
 
                         <Button
                           onClick={() => handleBookNow(tour.id)}
-                          className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
+                          className="bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl px-6 h-12 shadow-lg hover:shadow-xl transition-all"
                         >
                           Book Now
                         </Button>
@@ -1309,6 +1375,27 @@ export default function Home() {
                     ))}
                   </motion.div>
                 </div>
+
+                {/* NEW: Google Map Embed — real location */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  viewport={{ once: true }}
+                  className="relative z-10 mt-8 rounded-2xl overflow-hidden border border-white/20 shadow-lg h-48 md:h-56"
+                >
+                  <iframe
+                    src="https://maps.google.com/maps?q=49+A+Bandaramulla+Mirissa+Sri+Lanka&z=15&output=embed"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Muthu Tours location on Google Maps"
+                    className="w-full h-full"
+                  />
+                </motion.div>
 
                 {/* Trust Badges */}
                 <motion.div

@@ -5,6 +5,9 @@ export type SnorkelCameraOption =
   | "with_camera"
   | "camera_only";
 
+// NEW: shore (no boat) vs boat tour
+export type SnorkelTourType = "shore" | "boat";
+
 export type FishingMethod = "trolling" | "jigging";
 
 export type TimeSlot = "morning" | "midday" | "afternoon";
@@ -37,6 +40,16 @@ export interface CameraOption {
   shortLabel: string;
 }
 
+// NEW: shore vs boat tour type option
+export interface TourTypeOption {
+  value: SnorkelTourType;
+  label: string;
+  shortLabel: string;
+  duration: string;
+  maxPerBoat?: number;
+  image: string;
+}
+
 export const tours: Tour[] = [
   {
     id: "deep-sea-fishing",
@@ -62,17 +75,17 @@ export const tours: Tour[] = [
     id: "snorkeling",
     title: "Snorkeling with Turtles",
     description:
-      "Discover vibrant coral reefs, colorful tropical fish, and swim alongside sea turtles in the clear waters near Mirissa.",
+      "Discover vibrant coral reefs, colorful tropical fish, and swim alongside sea turtles in the clear waters near Mirissa. Choose a quick shore snorkel (1.5 hrs) or a full boat tour (3 hrs) covering deep water, coral reef, and shallow turtle spots. Camera rental available, with or without the tour.",
     price: 20,
-    duration: "3 hours",
+    duration: "1.5–3 hours",
     maxGuests: 12,
     image: "/images/snorkeling.jpg",
     features: [
       "All equipment provided",
       "Professional instructor",
+      "Choose Shore (1.5 hrs) or Boat Tour w/ coral reef (3 hrs)",
       "Visit turtle hotspots",
       "Fruits & refreshments",
-      "Shallow & safe areas",
       "Eco-friendly practices",
     ],
     badge: "Most Popular",
@@ -89,12 +102,11 @@ export const tours: Tour[] = [
     image:
       "https://cdn.sanity.io/images/esqfj3od/production/3bf47706fcbf56cf473827e4f2fcdbe0383d8242-1080x720.webp?w=800&q=65&fit=clip&auto=format",
     features: [
-      "Responsible approach",
+      "Seasonal (Dec–Apr)",
       "High-quality gear",
       "Expert marine guide",
       "Weather dependent",
       "Photos included",
-      "Seasonal (Dec–Apr)",
     ],
     badge: "Unique Experience",
     badgeColor: "bg-cyan-500 text-white",
@@ -126,15 +138,17 @@ export const fishingMethodOptions: FishingMethodOption[] = [
   },
 ];
 
+// UNCHANGED: same 3 camera options/prices apply to both shore and boat tours
+// NOTE: no fixed $ amount in labels below since price now depends on shore ($20 base) vs boat ($30 base) — see calculatePrice
 export const snorkelCameraOptions: CameraOption[] = [
   {
     value: "without_camera",
-    label: "Without Camera — $20/person",
+    label: "Without Camera",
     shortLabel: "Without Camera",
   },
   {
     value: "with_camera",
-    label: "With Free Camera — $35/person",
+    label: "With Free Camera (+$15)",
     shortLabel: "With Free Camera",
   },
   {
@@ -143,6 +157,30 @@ export const snorkelCameraOptions: CameraOption[] = [
     shortLabel: "Camera Rental Only",
   },
 ];
+
+// NEW: shore vs boat tour type options (affects duration/logistics, not camera pricing)
+export const snorkelTourTypeOptions: TourTypeOption[] = [
+  {
+    value: "shore",
+    label: "Shore Snorkeling — 1.5 hours",
+    shortLabel: "Shore (1.5 hrs)",
+    duration: "1.5 hours",
+    image: "/images/snorkeling-shore.png",
+  },
+  {
+    value: "boat",
+    label: "Boat Tour — 3 hours, incl. Coral Reef (max 8 people/boat)",
+    shortLabel: "Boat Tour (3 hrs)",
+    duration: "3 hours",
+    maxPerBoat: 8,
+    image: "/images/snorkeling-boat.png",
+  },
+];
+
+// NEW: helper to figure out how many boats are needed for the boat tour option
+export function getBoatsNeeded(guestCount: number): number {
+  return Math.ceil(guestCount / 8);
+}
 
 export function getTourPricingMeta(tourId: TourId) {
   switch (tourId) {
@@ -155,7 +193,7 @@ export function getTourPricingMeta(tourId: TourId) {
     case "snorkeling":
       return {
         label: "From $20/person",
-        note: "Camera options available",
+        note: "Shore (1.5 hrs) or Boat Tour (3 hrs, max 8/boat) — same camera pricing",
       };
 
     case "snorkeling-whales":
@@ -176,6 +214,7 @@ export function calculatePrice(
   tourId: TourId | "",
   guestCount: number,
   snorkelCamera: SnorkelCameraOption,
+  snorkelTourType: SnorkelTourType = "shore", // NEW param, defaults to shore so existing calls still work
 ): { total: number; breakdown: string } {
   if (tourId === "deep-sea-fishing") {
     if (guestCount === 1) {
@@ -191,17 +230,35 @@ export function calculatePrice(
   }
 
   if (tourId === "snorkeling") {
+    const tourLabel =
+      snorkelTourType === "boat" ? "boat tour, 3 hrs" : "shore, 1.5 hrs";
+
+    // camera rental only — flat $20, same regardless of shore/boat
     if (snorkelCamera === "camera_only") {
-      return { total: 20, breakdown: "Camera rental only — $20 flat" };
+      return {
+        total: 20,
+        breakdown: `Camera rental only — $20 flat (${tourLabel})`,
+      };
     }
 
-    const rate = snorkelCamera === "with_camera" ? 35 : 20;
-    const label =
+    // base price depends on shore ($20) vs boat ($30); camera adds a flat +$15 either way
+    const basePrice = snorkelTourType === "boat" ? 30 : 20;
+    const rate = snorkelCamera === "with_camera" ? basePrice + 15 : basePrice;
+    const cameraLabel =
       snorkelCamera === "with_camera" ? "with free camera" : "without camera";
+
+    // boat-specific logistics note: split into multiple boats if >8 pax
+    let boatNote = "";
+    if (snorkelTourType === "boat") {
+      const boats = getBoatsNeeded(guestCount);
+      if (boats > 1) {
+        boatNote = ` — requires ${boats} boats (max 8/boat)`;
+      }
+    }
 
     return {
       total: guestCount * rate,
-      breakdown: `${guestCount} person${guestCount > 1 ? "s" : ""} × $${rate}/person (${label})`,
+      breakdown: `${guestCount} person${guestCount > 1 ? "s" : ""} × $${rate}/person (${cameraLabel}, ${tourLabel})${boatNote}`,
     };
   }
 

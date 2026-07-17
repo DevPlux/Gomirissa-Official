@@ -20,9 +20,12 @@ import {
   calculatePrice,
   fishingMethodOptions,
   FishingMethod,
+  getBoatsNeeded,
   getTourById,
   snorkelCameraOptions,
   SnorkelCameraOption,
+  snorkelTourTypeOptions,
+  SnorkelTourType,
   TimeSlot,
   timeSlots,
   TourId,
@@ -71,6 +74,9 @@ export default function BookingDialog({
   const [guestCount, setGuestCount] = useState<number>(1);
   const [snorkelCamera, setSnorkelCamera] =
     useState<SnorkelCameraOption>("without_camera");
+  // NEW: shore vs boat tour type for the snorkeling package
+  const [snorkelTourType, setSnorkelTourType] =
+    useState<SnorkelTourType>("shore");
   const [fishingMethod, setFishingMethod] = useState<FishingMethod>("jigging");
   const [timeSlot, setTimeSlot] = useState<TimeSlot>("morning");
   const [selectedDate, setSelectedDate] = useState("");
@@ -89,6 +95,7 @@ export default function BookingDialog({
     setSelectedTour(initialTourId || "");
     setGuestCount(1);
     setSnorkelCamera("without_camera");
+    setSnorkelTourType("shore"); // NEW: reset shore/boat choice on open
     setFishingMethod("jigging");
     setTimeSlot("morning");
     setSelectedDate("");
@@ -112,10 +119,18 @@ export default function BookingDialog({
 
   const maxGuests = selectedTourData?.maxGuests ?? 10;
 
+  // NEW: pass snorkelTourType through as the 4th argument
   const { total: totalPrice, breakdown: priceBreakdown } = useMemo(
-    () => calculatePrice(selectedTour, guestCount, snorkelCamera),
-    [selectedTour, guestCount, snorkelCamera],
+    () =>
+      calculatePrice(selectedTour, guestCount, snorkelCamera, snorkelTourType),
+    [selectedTour, guestCount, snorkelCamera, snorkelTourType],
   );
+
+  // NEW: how many boats this booking would need, only relevant for boat tour
+  const boatsNeeded = useMemo(() => {
+    if (selectedTour !== "snorkeling" || snorkelTourType !== "boat") return 1;
+    return getBoatsNeeded(guestCount);
+  }, [selectedTour, snorkelTourType, guestCount]);
 
   const today = useMemo(() => {
     const now = new Date();
@@ -179,6 +194,7 @@ export default function BookingDialog({
     setSelectedTour(tourId);
     setGuestCount(1);
     setSnorkelCamera("without_camera");
+    setSnorkelTourType("shore"); // NEW: reset shore/boat choice when switching tours
     setFishingMethod("jigging");
   };
 
@@ -320,6 +336,18 @@ export default function BookingDialog({
           selectedTourData.id === "deep-sea-fishing" ? fishingMethod : null,
         snorkelCamera:
           selectedTourData.id === "snorkeling" ? snorkelCamera : null,
+        // NEW: persist which tour type (shore/boat) and boats needed — null when it's camera-only rental (no tour booked)
+        snorkelTourType:
+          selectedTourData.id === "snorkeling" &&
+          snorkelCamera !== "camera_only"
+            ? snorkelTourType
+            : null,
+        boatsNeeded:
+          selectedTourData.id === "snorkeling" &&
+          snorkelCamera !== "camera_only" &&
+          snorkelTourType === "boat"
+            ? boatsNeeded
+            : null,
         specialNotes: specialNotes.trim(),
         status: "pending" as const,
         paymentStatus: "unpaid" as const,
@@ -328,7 +356,8 @@ export default function BookingDialog({
       const docRef = await createBooking(bookingPayload);
 
       // WhatsApp Integration
-      const adminPhone = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_NUMBER || "94712588996";
+      const adminPhone =
+        process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_NUMBER || "94712588996";
       const waMessage = buildBookingWhatsAppMessage(bookingPayload, docRef.id);
       const waUrl = generateWhatsAppUrl(adminPhone, waMessage);
 
@@ -391,20 +420,22 @@ export default function BookingDialog({
             <button
               type="button"
               onClick={() => setActiveStep("details")}
-              className={`h-11 rounded-xl text-sm font-semibold transition-all ${activeStep === "details"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-                }`}
+              className={`h-11 rounded-xl text-sm font-semibold transition-all ${
+                activeStep === "details"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
             >
               Tour Options
             </button>
             <button
               type="button"
               onClick={() => setActiveStep("date")}
-              className={`h-11 rounded-xl text-sm font-semibold transition-all ${activeStep === "date"
-                ? "bg-white text-blue-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
-                }`}
+              className={`h-11 rounded-xl text-sm font-semibold transition-all ${
+                activeStep === "date"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-500 hover:text-slate-700"
+              }`}
             >
               Select Date
             </button>
@@ -508,15 +539,74 @@ export default function BookingDialog({
                           🐢 Snorkeling with Turtles Pricing
                         </p>
                         <p>
-                          • Without camera — <strong>$20/person</strong>
+                          • Shore (1.5 hrs) — <strong>$20/person</strong> (
+                          <strong>$35</strong> with camera)
                         </p>
                         <p>
-                          • With free camera — <strong>$35/person</strong>
+                          • Boat Tour (3 hrs, incl. coral reef) —{" "}
+                          <strong>$30/person</strong> (<strong>$45</strong> with
+                          camera)
                         </p>
                         <p>
                           • Camera rental only — <strong>$20</strong> flat
+                          (either option)
                         </p>
                       </div>
+
+                      {/* NEW: Shore vs Boat tour type selector — hidden when Camera Rental Only is picked, since that's not a tour booking */}
+                      {snorkelCamera !== "camera_only" ? (
+                        <div className="space-y-2">
+                          <Label className="text-slate-700 font-semibold">
+                            Tour Type
+                          </Label>
+                          <select
+                            value={snorkelTourType}
+                            onChange={(e) =>
+                              setSnorkelTourType(
+                                e.target.value as SnorkelTourType,
+                              )
+                            }
+                            className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {snorkelTourTypeOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+
+                          {snorkelTourType === "boat" && guestCount > 8 && (
+                            <p className="text-sm text-amber-700">
+                              Groups over 8 are split across {boatsNeeded} boats
+                              (max 8 people per boat).
+                            </p>
+                          )}
+
+                          {/* preview image for the selected tour type */}
+                          <div className="mt-2 overflow-hidden rounded-2xl border border-slate-200">
+                            <img
+                              src={
+                                snorkelTourTypeOptions.find(
+                                  (option) => option.value === snorkelTourType,
+                                )?.image
+                              }
+                              alt={
+                                snorkelTourType === "boat"
+                                  ? "Boat tour: coral reef and deep water snorkeling"
+                                  : "Shore snorkeling near the beach"
+                              }
+                              className="w-full h-40 object-cover"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+                          This option is <strong>camera rental only</strong> —
+                          no guided snorkeling tour is included. If you'd like
+                          to join a guided Shore or Boat snorkeling trip, choose
+                          "Without Camera" or "With Free Camera" instead.
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         <Label className="text-slate-700 font-semibold">
@@ -529,6 +619,7 @@ export default function BookingDialog({
                             setSnorkelCamera(value);
                             if (value === "camera_only") {
                               setGuestCount(1);
+                              setSnorkelTourType("shore"); // tour type is irrelevant for camera-only rental
                             }
                           }}
                           className="w-full h-12 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 outline-none focus:ring-2 focus:ring-blue-500"
@@ -770,9 +861,11 @@ export default function BookingDialog({
                       Booking Note
                     </p>
                     <p className="text-sm text-amber-800 leading-relaxed">
-                      Your booking will be submitted as a request first.
-                      We’ll review your selected date and package to confirm final availability.
-                      After submitting, WhatsApp will open with your booking details — just tap Send and we’ll handle the rest.
+                      Your booking will be submitted as a request first. We’ll
+                      review your selected date and package to confirm final
+                      availability. After submitting, WhatsApp will open with
+                      your booking details — just tap Send and we’ll handle the
+                      rest.
                     </p>
                   </div>
                 </div>
@@ -806,13 +899,16 @@ export default function BookingDialog({
                 className="h-12 w-full rounded-2xl bg-green-500 hover:bg-green-600 text-white flex items-center justify-between px-5"
                 disabled={submitting}
               >
-                <span>{submitting ? "Saving..." : "Submit & Connect via WhatsApp"}</span>
+                <span>
+                  {submitting ? "Saving..." : "Submit & Connect via WhatsApp"}
+                </span>
                 <span className="rounded-lg bg-blue-800/30 px-2.5 py-1 text-sm font-mono">
                   {totalPrice > 0 ? `$${totalPrice}` : "—"}
                 </span>
               </Button>
               <p className="text-xs text-center text-slate-500 font-medium px-2">
-                After submitting, please click SEND in the opened WhatsApp chat to notify us.
+                After submitting, please click SEND in the opened WhatsApp chat
+                to notify us.
               </p>
             </div>
           )}

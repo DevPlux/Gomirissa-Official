@@ -1356,6 +1356,27 @@ export default function Home() {
                   </motion.div>
                 </div>
 
+                {/* NEW: Google Map Embed — real location */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  viewport={{ once: true }}
+                  className="relative z-10 mt-8 rounded-2xl overflow-hidden border border-white/20 shadow-lg h-48 md:h-56"
+                >
+                  <iframe
+                    src="https://maps.google.com/maps?q=49+A+Bandaramulla+Mirissa+Sri+Lanka&z=15&output=embed"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Muthu Tours location on Google Maps"
+                    className="w-full h-full"
+                  />
+                </motion.div>
+
                 {/* Trust Badges */}
                 <motion.div
                   initial={{ opacity: 0 }}

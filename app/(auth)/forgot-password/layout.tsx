@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import AdminGuard from "./AdminGuard";
 
 export const metadata: Metadata = {
-  title: "Administration",
+  title: "Forgot Password",
+  alternates: {
+    canonical: "/forgot-password",
+  },
   robots: {
     index: false,
     follow: false,
-    noarchive: true,
     googleBot: {
       index: false,
       follow: false,
-      noarchive: true,
     },
   },
 };
 
-export default function AdminLayout({
+export default function ForgotPasswordLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <AdminGuard>{children}</AdminGuard>;
+  return children;
 }

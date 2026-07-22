@@ -1,24 +1,24 @@
 import type { Metadata } from "next";
-import AdminGuard from "./AdminGuard";
 
 export const metadata: Metadata = {
-  title: "Administration",
+  title: "Register",
+  alternates: {
+    canonical: "/register",
+  },
   robots: {
     index: false,
     follow: false,
-    noarchive: true,
     googleBot: {
       index: false,
       follow: false,
-      noarchive: true,
     },
   },
 };
 
-export default function AdminLayout({
+export default function RegisterLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <AdminGuard>{children}</AdminGuard>;
+  return children;
 }

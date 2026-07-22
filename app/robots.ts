@@ -1,4 +1,6 @@
-import { MetadataRoute } from "next";
+// app/robots.ts
+
+import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,8 +8,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
+        disallow: ["/admin/", "/api/"],
       },
     ],
     sitemap: "https://www.gomirissa.com/sitemap.xml",
+    host: "https://www.gomirissa.com",
   };
 }

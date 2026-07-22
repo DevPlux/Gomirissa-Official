@@ -31,9 +31,9 @@ export default function LoginPage() {
   const handleRedirect = async (uid: string) => {
     const docSnap = await getDoc(doc(db, "users", uid));
     if (docSnap.exists() && docSnap.data().role === "admin") {
-      router.push("/admin/dashboard");
+      router.replace("/admin/dashboard");
     } else {
-      router.push("/");
+      router.replace("/");
     }
   };
 

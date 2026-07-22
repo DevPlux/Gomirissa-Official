@@ -120,6 +120,8 @@ export default function Navbar({ onBookNow }: NavbarProps) {
 
   const isAdmin = user?.role === "admin";
 
+  const isAdminDashboard = pathname.startsWith("/admin/dashboard");
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -194,11 +196,10 @@ export default function Navbar({ onBookNow }: NavbarProps) {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-        scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-lg border-white/20 py-3"
-          : "bg-gradient-to-b from-black/30 to-transparent border-transparent py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${scrolled
+        ? "bg-white/80 backdrop-blur-xl shadow-lg border-white/20 py-3"
+        : "bg-gradient-to-b from-black/30 to-transparent border-transparent py-5"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
@@ -224,13 +225,11 @@ export default function Navbar({ onBookNow }: NavbarProps) {
           </div>
 
           <span
-            className={`text-xl md:text-2xl font-bold tracking-tight transition-all duration-300 ${
-              scrolled ? "text-slate-900" : "text-white"
-            } ${
-              !scrolled
+            className={`text-xl md:text-2xl font-bold tracking-tight transition-all duration-300 ${scrolled ? "text-slate-900" : "text-white"
+              } ${!scrolled
                 ? "text-transparent bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text"
                 : ""
-            }`}
+              }`}
           >
             GoMirissa
           </span>
@@ -238,7 +237,43 @@ export default function Navbar({ onBookNow }: NavbarProps) {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {!isAdmin && (
+          {isAdmin && isAdminDashboard ? (
+            <>
+              <div className="flex items-center gap-8">
+                <Link
+                  href="/admin/dashboard"
+                  className={`text-sm font-semibold transition-all relative ${pathname === "/admin/dashboard"
+                    ? "text-blue-600"
+                    : scrolled
+                      ? "text-slate-700 hover:text-blue-600"
+                      : "text-white hover:text-blue-200"
+                    }`}
+                >
+                  Dashboard
+                  {pathname === "/admin/dashboard" && (
+                    <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600 rounded-full" />
+                  )}
+                </Link>
+
+                <Link
+                  href="/admin/dashboard/bookings"
+                  className={`text-sm font-semibold transition-all relative ${pathname.startsWith("/admin/dashboard/bookings")
+                    ? "text-blue-600"
+                    : scrolled
+                      ? "text-slate-700 hover:text-blue-600"
+                      : "text-white hover:text-blue-200"
+                    }`}
+                >
+                  Bookings
+                  {pathname.startsWith("/admin/dashboard/bookings") && (
+                    <span className="absolute -bottom-2 left-0 w-full h-0.5 bg-blue-600 rounded-full" />
+                  )}
+                </Link>
+              </div>
+
+              <div className="h-6 w-px bg-gradient-to-b from-transparent via-slate-300 to-transparent" />
+            </>
+          ) : (
             <>
               <div className="flex items-center gap-6">
                 {navLinks.map((link) => (
@@ -247,15 +282,14 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     onClick={() =>
                       navigateToSection(link.href.replace("#", ""))
                     }
-                    className={`text-sm font-medium transition-all duration-200 relative group cursor-pointer ${
-                      scrolled ? "text-slate-600" : "text-white/90"
-                    }`}
+                    className={`text-sm font-medium transition-all duration-200 relative group cursor-pointer ${scrolled ? "text-slate-600" : "text-white/90"
+                      }`}
                   >
                     {link.label}
+
                     <span
-                      className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-                        scrolled ? "bg-blue-500" : "bg-white"
-                      }`}
+                      className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${scrolled ? "bg-blue-500" : "bg-white"
+                        }`}
                     />
                   </button>
                 ))}
@@ -273,9 +307,8 @@ export default function Navbar({ onBookNow }: NavbarProps) {
               >
                 <div className="text-right hidden lg:block">
                   <p
-                    className={`text-sm font-semibold ${
-                      scrolled ? "text-gray-800" : "text-white"
-                    }`}
+                    className={`text-sm font-semibold ${scrolled ? "text-gray-800" : "text-white"
+                      }`}
                   >
                     {user.displayName || "User"}
                   </p>
@@ -345,16 +378,28 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     )}
 
                     {isAdmin && (
-                      <Link
-                        href="/admin/dashboard"
-                        onClick={() => setProfileOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-                          <DashboardIcon />
-                        </div>
-                        <span className="font-medium">Admin Dashboard</span>
-                      </Link>
+                      <>
+                        <Link
+                          href="/admin/dashboard"
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <DashboardIcon />
+                          </div>
+                          <span className="font-medium">Dashboard</span>
+                        </Link>
+                        <Link
+                          href="/admin/dashboard/bookings"
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                            <CalendarIcon />
+                          </div>
+                          <span className="font-medium">Bookings</span>
+                        </Link>
+                      </>
                     )}
 
                     <div className="border-t border-gray-100 my-1" />
@@ -379,11 +424,10 @@ export default function Navbar({ onBookNow }: NavbarProps) {
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className={`text-sm font-semibold px-4 py-2 rounded-2xl transition-all duration-200 ${
-                  scrolled
-                    ? "text-blue-600 hover:bg-blue-50"
-                    : "text-white hover:bg-white/10"
-                }`}
+                className={`text-sm font-semibold px-4 py-2 rounded-2xl transition-all duration-200 ${scrolled
+                  ? "text-blue-600 hover:bg-blue-50"
+                  : "text-white hover:bg-white/10"
+                  }`}
               >
                 Sign In
               </Link>
@@ -402,27 +446,18 @@ export default function Navbar({ onBookNow }: NavbarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-full border shadow-md backdrop-blur-md transition-all duration-300 ${
-                scrolled
-                  ? "border-slate-200 bg-white text-slate-900 hover:bg-slate-100"
-                  : "border-white/30 bg-white/20 text-white hover:bg-white/30"
-              }`}
+              className={`rounded-full transition-all duration-300 ${scrolled
+                ? "text-slate-900 hover:bg-gray-100 bg-gray-500/20"
+                : "text-white hover:bg-white/20 bg-gray-500/50"
+                }`}
             >
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </Button>
           </SheetTrigger>
 
-          <SheetContent
-            side="bottom"
-            className="h-[88vh] rounded-t-3xl border-t-0 bg-white p-0 duration-300"
-          >
-            <div className="flex h-full flex-col">
-              {/* Drag handle */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="h-1.5 w-12 rounded-full bg-gray-200" />
-              </div>
-
-              <div className="px-6 pt-4 pb-4 bg-gradient-to-r from-blue-600 to-blue-900 rounded-t-2xl mx-1">
+          <SheetContent side="right" className="w-[85vw] max-w-md bg-white p-0">
+            <div className="flex flex-col h-full">
+              <div className="px-6 pt-8 pb-4 bg-gradient-to-r from-blue-600 to-blue-900">
                 <div className="flex items-center justify-between mb-6">
                   <div
                     onClick={() => {
@@ -525,13 +560,29 @@ export default function Navbar({ onBookNow }: NavbarProps) {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 mb-2">
                       Admin
                     </p>
+
                     <Link
                       href="/admin/dashboard"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                      className={`flex items-center gap-3 py-3 px-4 rounded-xl transition ${pathname === "/admin/dashboard"
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                        }`}
                     >
                       <DashboardIcon />
-                      <span>Admin Dashboard</span>
+                      <span>Dashboard</span>
+                    </Link>
+
+                    <Link
+                      href="/admin/dashboard/bookings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 py-3 px-4 rounded-xl transition ${pathname.startsWith("/admin/dashboard/bookings")
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                        }`}
+                    >
+                      <CalendarIcon />
+                      <span>Bookings</span>
                     </Link>
                   </div>
                 )}

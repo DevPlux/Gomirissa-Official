@@ -41,6 +41,7 @@ import { tours, TourId, getTourPricingMeta } from "@/lib/booking";
 
 import { Calendar } from "lucide-react";
 import { Inter } from "next/font/google"; // or any icon you prefer
+import { useVisitorTracking } from "@/hooks/useVisitorTracking";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -444,6 +445,9 @@ const ScrollToSection = ({
 };
 
 export default function Home() {
+// Track unique visitors — runs a 30-second engagement timer silently
+  useVisitorTracking();
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isGalleryExpanded, setIsGalleryExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

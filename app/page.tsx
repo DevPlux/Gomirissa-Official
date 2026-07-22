@@ -39,7 +39,15 @@ import logo from "@/assets/gomirissa.png";
 import BookingDialog from "@/components/BookingDialog";
 import { tours, TourId, getTourPricingMeta } from "@/lib/booking";
 
-import { Calendar } from "lucide-react"; // or any icon you prefer
+import { Calendar } from "lucide-react";
+import { Inter } from "next/font/google"; // or any icon you prefer
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 // Define variants with proper Framer Motion typing
 const iconVariants: Variants = {
@@ -585,7 +593,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="inline-flex font- items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-medium -mb-1"
+              className="inline-flex font- items-center gap-2 px-4 py-1.5 sm:mb-0 mb-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-medium -mb-1"
             >
               <motion.span
                 animate={{ scale: [1, 1.2, 1] }}
@@ -740,16 +748,18 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
+              className="flex flex-col md:flex-row md:items-end items-center justify-between mb-16 gap-6"
             >
-              <div className="max-w-2xl">
+              <div
+                className={`max-w-2xl text-center md:text-left ${inter.variable}`}
+              >
                 <span className="text-blue-600 font-bold tracking-wider uppercase text-sm mb-2 block">
                   Our Packages
                 </span>
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">
+                <h2 className="text-5xl md:text-5xl font-bold text-slate-900 tracking-tight">
                   Choose Your <span className="text-blue-600">Expedition</span>
                 </h2>
-                <p className="text-slate-600 mt-4 text-lg">
+                <p className="text-slate-600 mt-4 text-lg font-medium px-4 md:px-0">
                   Curated experiences for every type of traveler. From
                   adrenaline-pumping fishing to peaceful snorkeling.
                 </p>
@@ -884,7 +894,7 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="text-center max-w-3xl mx-auto mb-16"
+              className={`text-center max-w-3xl mx-auto mb-16 ${inter.variable}`}
             >
               <span className="text-cyan-600 font-bold tracking-wider uppercase text-sm">
                 Visual Diary
@@ -892,7 +902,7 @@ export default function Home() {
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 mt-2">
                 Captured Moments
               </h2>
-              <p className="text-lg text-slate-600">
+              <p className="text-lg text-slate-600 font-medium px-4 md:px-0">
                 Real photos from our daily excursions. No stock filters, just
                 pure ocean beauty.
               </p>
@@ -1004,13 +1014,18 @@ export default function Home() {
                 variants={fadeInLeft}
                 className="order-1"
               >
-                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-base md:text-lg font-bold tracking-wider uppercase shadow-lg shadow-blue-200/50 mb-8">
-                  Established 2010
+                <div className="flex flex-col items-center md:items-start">
+                  {/* Badge */}
+                  <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-base md:text-lg font-bold tracking-wider uppercase shadow-lg shadow-blue-200/50 mb-8 mx-auto md:mx-0">
+                    Established 2010
+                  </div>
+
+                  {/* Heading */}
+                  <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight text-center md:text-left">
+                    Authentic Mirissa. <br />
+                    <span className="text-blue-600">Personalized Service.</span>
+                  </h2>
                 </div>
-                <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                  Authentic Mirissa. <br />
-                  <span className="text-blue-600">Personalized Service.</span>
-                </h2>
                 <div className="space-y-6 text-base md:text-lg text-slate-600 mb-8 leading-relaxed">
                   <p>
                     Muthu Tours is a locally owned service founded by Sandun
@@ -1152,9 +1167,10 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
-              className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6"
+              className="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-6"
             >
-              <div>
+              <div className="text-center md:text-left">
+                {" "}
                 <Badge className="bg-blue-500/20 text-blue-200 hover:bg-blue-500/30 mb-4 border-0 px-4 py-2 text-sm backdrop-blur-sm">
                   ⭐ Traveler Reviews
                 </Badge>
@@ -1164,7 +1180,7 @@ export default function Home() {
                     Sea
                   </span>
                 </h2>
-                <p className="text-slate-400 mt-3 text-lg max-w-2xl">
+                <p className="text-slate-400 mt-3 text-lg max-w-2xl px-8 md:px-0">
                   Real experiences from adventurers who sailed with us.
                 </p>
               </div>
@@ -1176,7 +1192,7 @@ export default function Home() {
                   ))}
                 </div>
                 <span className="text-xs text-slate-400 font-medium ml-1">
-                  (200+ reviews)
+                  (100+ reviews)
                 </span>
               </div>
             </motion.div>

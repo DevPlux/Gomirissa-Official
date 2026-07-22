@@ -402,19 +402,27 @@ export default function Navbar({ onBookNow }: NavbarProps) {
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-full transition-all duration-300 ${
+              className={`rounded-full border shadow-md backdrop-blur-md transition-all duration-300 ${
                 scrolled
-                  ? "text-slate-900 hover:bg-gray-100 bg-gray-500/20"
-                  : "text-white hover:bg-white/20 bg-gray-500/50"
+                  ? "border-slate-200 bg-white text-slate-900 hover:bg-slate-100"
+                  : "border-white/30 bg-white/20 text-white hover:bg-white/30"
               }`}
             >
               {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </Button>
           </SheetTrigger>
 
-          <SheetContent side="right" className="w-[85vw] max-w-md bg-white p-0">
-            <div className="flex flex-col h-full">
-              <div className="px-6 pt-8 pb-4 bg-gradient-to-r from-blue-600 to-blue-900">
+          <SheetContent
+            side="bottom"
+            className="h-[88vh] rounded-t-3xl border-t-0 bg-white p-0 duration-300"
+          >
+            <div className="flex h-full flex-col">
+              {/* Drag handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="h-1.5 w-12 rounded-full bg-gray-200" />
+              </div>
+
+              <div className="px-6 pt-4 pb-4 bg-gradient-to-r from-blue-600 to-blue-900 rounded-t-2xl mx-1">
                 <div className="flex items-center justify-between mb-6">
                   <div
                     onClick={() => {

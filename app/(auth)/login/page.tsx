@@ -191,7 +191,7 @@ export default function LoginPage() {
             <h2 className="text-2xl font-extrabold text-white tracking-tight">
               Welcome Back
             </h2>
-            <p className="text-white/50 text-xs mt-1">
+            <p className="text-white/80 text-xs mt-1">
               Sign in to Mirissa Adventures
             </p>
           </div>
@@ -218,7 +218,7 @@ export default function LoginPage() {
               <div className="flex justify-end px-1">
                 <Link
                   href="/forgot-password"
-                  className="text-white/40 hover:text-white transition-colors text-[10px]"
+                  className="text-white/80 hover:text-white transition-colors text-[10px]"
                 >
                   Forgot Password?
                 </Link>
@@ -236,7 +236,7 @@ export default function LoginPage() {
 
           <div className="relative my-6">
             <div className="relative flex justify-center text-[10px] uppercase">
-              <span className="bg-transparent px-2 text-white/30">Or</span>
+              <span className="bg-transparent px-2 text-white/80">Or</span>
             </div>
           </div>
 

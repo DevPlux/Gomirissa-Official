@@ -1,5 +1,3 @@
-// app/layout.tsx
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
@@ -45,7 +43,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/images/gomirissa-og.png",
-        alt: "GoMirissa ocean tours in Mirissa, Sri Lanka",
+        width: 1200,
+        height: 630,
+        alt: "GoMirissa boat tours, deep-sea fishing and snorkeling adventures",
       },
     ],
   },
